@@ -406,13 +406,16 @@ body.exercise-mode .content {
   padding-bottom: 0;
 }
 
-/* exerciseView = flex, centraliza o card */
+/* exerciseView = flex, centraliza o card abaixo do topbar */
 body.exercise-mode #exerciseView {
   position: relative !important;
   display: flex !important;
+  flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
   height: calc(100dvh - 62px) !important;
+  padding-top: 52px !important; /* reserva espaço para o topbar flutuante */
+  box-sizing: border-box !important;
   overflow: hidden;
 }
 
@@ -438,12 +441,11 @@ body.exercise-mode .ex-card {
   width: min(700px, 100%) !important;
   max-width: unset !important;
   height: auto !important;
-  max-height: calc(100dvh - 62px) !important;
+  max-height: calc(100dvh - 114px) !important; /* 62px topbar + 52px ex-topbar */
   flex: unset !important;
   min-height: unset !important;
   margin: 0 !important;
-  /* Em telas pequenas o topbar sobrepõe o topo do card */
-  padding-top: 52px !important;
+  padding-top: 20px !important;
   box-sizing: border-box;
   overflow-y: auto;
   overflow-x: hidden;
@@ -451,21 +453,14 @@ body.exercise-mode .ex-card {
   scrollbar-color: rgba(148,163,184,.35) transparent;
 }
 
-/* Telas altas: card fica abaixo do topbar → padding menor */
-@media (min-height: 850px) {
-  body.exercise-mode .ex-card {
-    padding-top: 20px !important;
-  }
-}
-
 /* Tablet */
 @media (max-width: 900px) {
   body.exercise-mode #exerciseView {
     height: calc(100dvh - 56px) !important;
+    padding-top: 48px !important;
   }
   body.exercise-mode .ex-card {
-    max-height: calc(100dvh - 56px) !important;
-    padding-top: 48px !important;
+    max-height: calc(100dvh - 104px) !important;
   }
 }
 
@@ -473,10 +468,10 @@ body.exercise-mode .ex-card {
 @media (max-width: 480px) {
   body.exercise-mode #exerciseView {
     height: calc(100dvh - 52px) !important;
+    padding-top: 44px !important;
   }
   body.exercise-mode .ex-card {
-    max-height: calc(100dvh - 52px) !important;
-    padding-top: 44px !important;
+    max-height: calc(100dvh - 96px) !important;
   }
 }
 
