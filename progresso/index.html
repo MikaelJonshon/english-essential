@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Essential — Meu Progresso</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../dashboard-aluno/dashboard-aluno.css">
+<link rel="stylesheet" href="progresso.css">
+<script>
+  (function() {
+    try {
+      const cfg = JSON.parse(localStorage.getItem('ee_settings') || '{}');
+    } catch(e) {}
+    if (localStorage.getItem('ee_fullscreen') === '1') {
+      window.addEventListener('DOMContentLoaded', () => {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }, { once: true });
+    }
+  })();
+</script>
+</head>
+<body>
+<div class="layout">
+
+  <!-- Overlay mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-footer" style="border-top:none;padding-top:16px;padding-bottom:0;">
+      <div class="user-pill">
+        <div class="avatar" id="sidebarAvatar">?</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarName">—</div>
+          <div class="user-role-label">Aluno</div>
+        </div>
+        <div class="logout-btn" onclick="doLogout()" title="Sair">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-xp">
+      <div class="level-row">
+        <span class="level-badge" id="sidebarLevel">Nível 1</span>
+        <span class="xp-to-next" id="sidebarXpNext">0 / 1000 XP</span>
+      </div>
+      <div class="xp-bar-track">
+        <div class="xp-bar-fill" id="sidebarXpBar" style="width:0%"></div>
+      </div>
+      <div class="streak-row">
+        <span class="streak-fire">🔥</span>
+        <span>Sequência:</span>
+        <strong id="sidebarStreak">0</strong>
+        <span>dias</span>
+      </div>
+    </div>
+
+    <div class="sidebar-radar">
+      <div class="radar-title">Minhas Habilidades</div>
+      <canvas id="skillRadar" width="220" height="190"></canvas>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Aprendizado</div>
+      <a class="nav-item" href="../dashboard-aluno/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Início
+      </a>
+      <a class="nav-item active" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Meu progresso
+      </a>
+      <div class="nav-section-label">Sistema</div>
+      <a class="nav-item" href="../dashboard-aluno/index.html#settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Configurações
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" style="margin-top:auto;">
+      <a class="brand-logo" href="../dashboard-aluno/index.html">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">English <span>Essential</span></div>
+          <div class="brand-role">Painel do aluno</div>
+        </div>
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div>
+          <h1>Meu Progresso</h1>
+          <p id="topbarSub">Carregando...</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="xp-pill" id="topbarXp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span id="topbarXpVal">0 XP</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content" id="mainContent">
+      <!-- Loader -->
+      <div class="loading-center" id="loader">
+        <div class="dot-loader"><span></span><span></span><span></span></div>
+        <div>Carregando seu progresso...</div>
+      </div>
+
+      <!-- Conteúdo (oculto até carregar) -->
+      <div id="progressContent" style="display:none;">
+
+        <!-- Topo: Ranking -->
+        <div class="prog-card prog-card--full rank-panel-card">
+          <div class="prog-card-header">
+            <span class="prog-card-title">🏆 Ranking</span>
+            <span class="prog-card-sub">Evolua de nível para subir de rank</span>
+          </div>
+          <div id="rankPanel" class="rank-panel"></div>
+        </div>
+
+        <!-- Stats rápidas -->
+        <div class="prog-stats-row">
+          <div class="prog-stat-card">
+            <div class="prog-stat-icon">⚡</div>
+            <div class="prog-stat-val" id="statXp">0</div>
+            <div class="prog-stat-lbl">XP Total</div>
+          </div>
+          <div class="prog-stat-card">
+            <div class="prog-stat-icon">📚</div>
+            <div class="prog-stat-val" id="statLessons">0</div>
+            <div class="prog-stat-lbl">Lições concluídas</div>
+          </div>
+          <div class="prog-stat-card">
+            <div class="prog-stat-icon">🎯</div>
+            <div class="prog-stat-val" id="statAccuracy">0%</div>
+            <div class="prog-stat-lbl">Aproveitamento geral</div>
+          </div>
+          <div class="prog-stat-card">
+            <div class="prog-stat-icon">🪙</div>
+            <div class="prog-stat-val" id="statCoins">0</div>
+            <div class="prog-stat-lbl">Moedas</div>
+          </div>
+        </div>
+
+        <!-- Radar + Pontos fortes/melhoria -->
+        <div class="prog-row-2">
+          <div class="prog-card prog-card--radar">
+            <div class="prog-card-header">
+              <span class="prog-card-title">Habilidades</span>
+              <span class="prog-card-sub">Desempenho por área</span>
+            </div>
+            <div class="prog-radar-wrap">
+              <canvas id="bigRadar" width="400" height="300"></canvas>
+              <div class="prog-radar-legend">
+                <div class="radar-leg-item"><span class="radar-leg-dot" style="background:#2563eb"></span>Speaking <strong id="legSpeaking">0%</strong></div>
+                <div class="radar-leg-item"><span class="radar-leg-dot" style="background:#7c3aed"></span>Listening <strong id="legListening">0%</strong></div>
+                <div class="radar-leg-item"><span class="radar-leg-dot" style="background:#0891b2"></span>Writing <strong id="legWriting">0%</strong></div>
+                <div class="radar-leg-item"><span class="radar-leg-dot" style="background:#059669"></span>Reading <strong id="legReading">0%</strong></div>
+              </div>
+            </div>
+          </div>
+          <div class="prog-card prog-card--insights">
+            <div class="prog-card-header">
+              <span class="prog-card-title">Análise</span>
+              <span class="prog-card-sub">Pontos fortes e de melhoria</span>
+            </div>
+            <div id="insightsContent" class="prog-insights"></div>
+          </div>
+        </div>
+
+        <!-- Lições concluídas -->
+        <div class="prog-card prog-card--full" id="lessonsCard" style="display:none;">
+          <div class="prog-card-header">
+            <span class="prog-card-title">Lições concluídas</span>
+            <span class="prog-card-sub">Histórico de desempenho por lição</span>
+          </div>
+          <div id="lessonsList" class="prog-lessons-list"></div>
+        </div>
+
+      </div><!-- /progressContent -->
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="progresso.js"></script>
+</body>
+</html>

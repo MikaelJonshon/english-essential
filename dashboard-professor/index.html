@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Essential — Professor</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dashboard-professor.css">
+<!-- Fullscreen — inline para evitar flash -->
+<script>
+  (function() {
+    try {
+      const cfg = JSON.parse(localStorage.getItem('ee_settings') || '{}');
+      if (cfg.zoom && cfg.zoom !== 100) {
+        document.documentElement.style.fontSize = (cfg.zoom / 100) + 'rem';
+      }
+      if (!cfg.animations) {
+        document.documentElement.classList.add('no-animations');
+      }
+    } catch(e) {}
+    if (localStorage.getItem('ee_fullscreen') === '1') {
+      window.addEventListener('DOMContentLoaded', () => {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }, { once: true });
+    }
+  })();
+</script>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── Sidebar overlay (mobile) ── -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Perfil (topo) -->
+    <div class="sidebar-footer" style="border-top:none;padding-top:16px;padding-bottom:0;">
+      <div class="user-pill">
+        <div class="avatar">?</div>
+        <div class="user-info">
+          <div class="user-name">—</div>
+          <div class="user-role-label">—</div>
+        </div>
+        <div class="logout-btn" onclick="doLogout()" title="Sair">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegação -->
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <a class="nav-item active" href="#" onclick="showView('overview', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Visão geral
+      </a>
+      <a class="nav-item" href="#" onclick="showView('students', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Alunos
+      </a>
+      <a class="nav-item" id="navUsers" href="#" onclick="showView('users', this)" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        Professores
+      </a>
+      <div class="nav-section-label">Sistema</div>
+      <a class="nav-item" id="navConfig" href="#" onclick="showView('config', this)" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Configurações
+      </a>
+      <a class="nav-item" id="navConfigDisabled" href="#" style="opacity:.45;pointer-events:none;cursor:default;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Configurações
+      </a>
+    </nav>
+
+    <!-- Logo (rodapé) -->
+    <div class="sidebar-footer" style="margin-top:auto;">
+      <a class="brand-logo" href="#">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">English <span>Essential</span></div>
+          <div class="brand-role">Painel do professor</div>
+        </div>
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div>
+          <h1>Visão geral</h1>
+          <p>Carregando...</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Buscar aluno..." oninput="filterStudents(this.value)" />
+        </div>
+        <button class="btn-new-student" onclick="openModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo aluno
+        </button>
+        <button class="btn-new-student" id="btnNewTeacher" onclick="openModalTeacher()" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo professor
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content" id="viewOverview">
+
+      <!-- Métricas -->
+      <div class="metrics" id="metricsSection">
+        <div class="metric-card gold">
+          <div class="metric-label">Total de alunos</div>
+          <div class="metric-value" id="metricTotal">—</div>
+          <div class="metric-sub">ativos na plataforma</div>
+        </div>
+        <div class="metric-card warn">
+          <div class="metric-label">Taxa média de acerto</div>
+          <div class="metric-value" id="metricScore">—</div>
+          <div class="metric-sub">em lições nos últimos 7 dias</div>
+        </div>
+        <div class="metric-card danger">
+          <div class="metric-label">Inativos (+14 dias)</div>
+          <div class="metric-value" id="metricInactive">—</div>
+          <div class="metric-sub">sem acessar há mais de 14 dias</div>
+        </div>
+      </div>
+
+      <!-- Lista de alunos + Inativos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Alunos</span>
+            <a class="card-action" href="#" onclick="event.preventDefault();showView('students', document.querySelector('.nav-item[onclick*=students]'))">Ver todos</a>
+          </div>
+          <div class="student-list" id="studentList">
+            <div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando alunos...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Alunos inativos</span>
+            <a class="card-action" href="#" onclick="event.preventDefault();showView('students', document.querySelector('.nav-item[onclick*=students]'))">Ver todos</a>
+          </div>
+          <div class="card-body" id="inactiveList">
+            <div style="padding:20px 22px;font-size:13px;color:var(--ink-muted);">Carregando dados...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- View: Alunos (admin + teacher) -->
+    <div class="content" id="viewStudents" style="display:none;">
+      <div class="card" style="margin:0;">
+        <div class="card-header" style="flex-wrap:wrap;gap:10px;">
+          <span class="card-title">Todos os alunos</span>
+          <button class="btn-new-student" onclick="openModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo aluno
+          </button>
+        </div>
+
+        <!-- Filtros -->
+        <div style="padding:12px 22px 4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <div class="search-bar" style="flex:1;min-width:180px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="studentViewSearch" placeholder="Buscar por nome ou código..." oninput="applyStudentFilters()" />
+          </div>
+          <select id="studentViewStatus" onchange="applyStudentFilters()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border,#e0e0e0);font-size:13px;font-family:inherit;background:var(--bg-card,#fff);color:var(--ink,#1a1a2e);cursor:pointer;">
+            <option value="all">Todos os status</option>
+            <option value="active">Ativos</option>
+            <option value="inactive">Inativos</option>
+          </select>
+          <select id="studentViewSort" onchange="applyStudentFilters()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border,#e0e0e0);font-size:13px;font-family:inherit;background:var(--bg-card,#fff);color:var(--ink,#1a1a2e);cursor:pointer;">
+            <option value="name">Nome A–Z</option>
+            <option value="name_desc">Nome Z–A</option>
+            <option value="newest">Mais recentes</option>
+            <option value="oldest">Mais antigos</option>
+          </select>
+        </div>
+
+        <div style="padding:4px 22px 12px;">
+          <span id="studentViewCount" style="font-size:12px;color:var(--ink-muted,#888);"></span>
+        </div>
+
+        <div class="student-list" id="studentViewList" style="max-height:520px;overflow-y:auto;">
+          <div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando alunos...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View: Usuários (admin only) -->
+    <div class="content" id="viewUsers" style="display:none;">
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <span class="card-title">Professores e Administradores</span>
+          <button class="btn-new-student" id="btnNewTeacherUsers" onclick="openModalTeacher()" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo professor
+          </button>
+        </div>
+        <div id="staffList" style="padding:8px 0;">
+          <div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando usuários...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View: Configurações (secretaria/admin) -->
+    <div class="content" id="viewConfig" style="display:none;">
+      <div class="card" style="margin:0;max-width:600px;">
+        <div class="modal-header" style="padding:20px 24px 16px;">
+          <div>
+            <h2 style="font-size:16px;font-weight:600;margin:0;">Identidade visual</h2>
+            <p style="margin:4px 0 0;font-size:13px;color:var(--ink-muted,#888);">Personalize a aparência do sistema para toda a organização.</p>
+          </div>
+        </div>
+
+        <div style="padding:0 24px 24px;display:flex;flex-direction:column;gap:24px;">
+
+          <!-- Logo atual -->
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--ink,#1a1a2e);margin-bottom:10px;">Logo da escola</div>
+            <div id="logoPreviewWrap" style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
+              <div id="logoPreviewBox" style="width:160px;height:60px;border-radius:10px;border:1.5px dashed var(--border,#ddd);display:flex;align-items:center;justify-content:center;background:var(--bg-card2,#f7f7fa);overflow:hidden;flex-shrink:0;">
+                <span id="logoPreviewPlaceholder" style="font-size:12px;color:var(--ink-muted,#aaa);">Sem logo</span>
+                <img id="logoPreviewImg" src="" alt="Logo" style="display:none;max-width:100%;max-height:100%;object-fit:contain;padding:6px;" />
+              </div>
+              <div style="font-size:12px;color:var(--ink-muted,#888);line-height:1.6;">
+                <b style="color:var(--ink,#1a1a2e);display:block;margin-bottom:2px;">Recomendações</b>
+                Formato: PNG ou SVG (fundo transparente)<br>
+                Dimensões: entre <b>200×50px</b> e <b>400×100px</b><br>
+                Tamanho máximo: <b>500 KB</b><br>
+                A logo substitui "English Essential" em todos os painéis.
+              </div>
+            </div>
+
+            <!-- Upload area -->
+            <div id="logoDropZone" style="border:2px dashed var(--border,#ddd);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;background:var(--bg-card2,#f7f7fa);"
+              onclick="document.getElementById('logoFileInput').click()"
+              ondragover="event.preventDefault();this.style.borderColor='#6366f1'"
+              ondragleave="this.style.borderColor=''"
+              ondrop="handleLogoDrop(event)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;color:var(--ink-muted,#aaa);margin-bottom:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div style="font-size:13px;color:var(--ink-muted,#888);">Clique ou arraste a logo aqui</div>
+              <div style="font-size:11px;color:var(--ink-muted,#aaa);margin-top:3px;">PNG, SVG, JPEG ou WebP · máx. 500 KB</div>
+              <input type="file" id="logoFileInput" accept="image/png,image/svg+xml,image/jpeg,image/webp" style="display:none;" onchange="handleLogoSelect(event)" />
+            </div>
+
+            <!-- Feedback -->
+            <div id="configFeedback" class="modal-feedback" style="margin-top:10px;"></div>
+
+            <!-- Actions -->
+            <div style="display:flex;gap:10px;margin-top:14px;">
+              <button class="btn-save" id="btnSaveLogo" onclick="saveLogo()" style="min-width:130px;">
+                <div class="spin" id="saveLogoSpin"></div>
+                <span id="saveLogoLabel">Salvar logo</span>
+              </button>
+              <button class="btn-cancel" id="btnRemoveLogo" onclick="removeLogo()" style="display:none;">Remover logo</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal: Novo Aluno -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Novo aluno</h2>
+        <p>Preencha os dados para criar o acesso.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-feedback" id="modalFeedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="feedbackIcon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="feedbackText"></span>
+    </div>
+
+    <div class="modal-field">
+      <label>Nome completo</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <input type="text" id="newName" placeholder="Ex: João da Silva" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Código de acesso</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <input type="text" id="newCode" placeholder="Ex: joao.silva" autocomplete="off" />
+      </div>
+      <div class="field-hint">4 a 50 caracteres. Letras, números, ponto e hífen. Será o login do aluno.</div>
+    </div>
+
+    <div class="modal-field">
+      <label>Senha</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <input type="password" id="newPass" placeholder="Digite a senha" autocomplete="new-password" />
+        <button class="toggle-pass-modal" onclick="toggleModalPass()" type="button">
+          <svg id="modalEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" id="btnSave" onclick="saveStudent()">
+        <div class="spin" id="saveSpin"></div>
+        <span id="saveLabel">Criar aluno</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Novo Professor -->
+<div class="modal-overlay" id="modalTeacherOverlay" onclick="handleTeacherOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Novo professor</h2>
+        <p>Preencha os dados para criar o acesso.</p>
+      </div>
+      <button class="modal-close" onclick="closeModalTeacher()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-feedback" id="modalTeacherFeedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="feedbackTeacherIcon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="feedbackTeacherText"></span>
+    </div>
+
+    <div class="modal-field">
+      <label>Nome completo</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <input type="text" id="newTeacherName" placeholder="Ex: Maria Oliveira" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Código de acesso</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <input type="text" id="newTeacherCode" placeholder="Ex: maria.oliveira" autocomplete="off" />
+      </div>
+      <div class="field-hint">4 a 50 caracteres. Letras, números, ponto e hífen. Será o login do professor.</div>
+    </div>
+
+    <div class="modal-field">
+      <label>E-mail <span style="color:var(--ink-muted);font-weight:400;">(opcional)</span></label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
+        <input type="email" id="newTeacherEmail" placeholder="Ex: maria@escola.com" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Telefone <span style="color:var(--ink-muted);font-weight:400;">(opcional)</span></label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <input type="tel" id="newTeacherPhone" placeholder="Ex: (11) 99999-0000" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Senha</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <input type="password" id="newTeacherPass" placeholder="Digite a senha" autocomplete="new-password" />
+        <button class="toggle-pass-modal" onclick="toggleTeacherPass()" type="button">
+          <svg id="teacherEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModalTeacher()">Cancelar</button>
+      <button class="btn-save" id="btnSaveTeacher" onclick="saveTeacher()">
+        <div class="spin" id="saveTeacherSpin"></div>
+        <span id="saveTeacherLabel">Criar professor</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Alterar Senha -->
+<div class="modal-overlay" id="modalPassOverlay" onclick="if(event.target===this)closePassModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Alterar senha</h2>
+        <p id="passModalSubtitle">Definir nova senha para o usuário.</p>
+      </div>
+      <button class="modal-close" onclick="closePassModal()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-feedback" id="passFeedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="passFeedbackIcon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="passFeedbackText"></span>
+    </div>
+    <div class="modal-field">
+      <label>Nova senha</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <input type="password" id="staffNewPass" placeholder="Digite a nova senha" autocomplete="new-password" />
+        <button class="toggle-pass-modal" onclick="toggleStaffPass()" type="button">
+          <svg id="staffEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePassModal()">Cancelar</button>
+      <button class="btn-save" id="btnSavePass" onclick="saveStaffPassword()">
+        <div class="spin" id="savePassSpin"></div>
+        <span id="savePassLabel">Salvar senha</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar Exclusão -->
+<div class="modal-overlay" id="modalDeleteOverlay" onclick="if(event.target===this)closeDeleteModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Confirmar exclusão</h2>
+        <p id="deleteModalSubtitle">Tem certeza que deseja remover este usuário?</p>
+      </div>
+      <button class="modal-close" onclick="closeDeleteModal()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-feedback" id="deleteFeedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="deleteFeedbackIcon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="deleteFeedbackText"></span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+      <button class="btn-save" id="btnConfirmDelete" onclick="confirmDeleteStaff()" style="background:var(--danger,#e74c3c);">
+        <div class="spin" id="deleteConfirmSpin"></div>
+        <span id="deleteConfirmLabel">Sim, remover</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  // ── Modal — independente do Supabase ──
+  function openModal() {
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalFeedback').className = 'modal-feedback';
+    ['newName','newCode','newPass'].forEach(id => document.getElementById(id).value = '');
+    setTimeout(() => document.getElementById('newName').focus(), 100);
+  }
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+  function handleOverlayClick(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  function toggleModalPass() {
+    const input = document.getElementById('newPass'), icon = document.getElementById('modalEyeIcon');
+    const show  = input.type === 'password';
+    input.type  = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? '<line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+  function showFeedback(type, msg) {
+    document.getElementById('feedbackText').textContent = msg;
+    document.getElementById('feedbackIcon').innerHTML = type === 'success'
+      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+      : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+    document.getElementById('modalFeedback').className = 'modal-feedback ' + type;
+  }
+  function setSaveLoading(on) {
+    document.getElementById('btnSave').disabled       = on;
+    document.getElementById('saveSpin').style.display = on ? 'block' : 'none';
+    document.getElementById('saveLabel').textContent  = on ? 'Criando...' : 'Criar aluno';
+  }
+
+  // ── Supabase ──
+  const SUPABASE_URL  = 'https://jhpqdxqsgnyqtzqvggvx.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpocHFkeHFzZ255cXR6cXZnZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTEyMjksImV4cCI6MjA5NTY2NzIyOX0.xGC_jijXKpRAdhuyyTMQxS8qkca0Dap_Wcs3_8xKvcw';
+  let db = null;
+  try { db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); } catch(e) { console.warn('Supabase não carregou:', e); }
+
+  const COLORS = ['av-blue','av-green','av-purple','av-orange','av-pink','av-teal'];
+  const avatarColor = n => COLORS[(n||'').charCodeAt(0) % COLORS.length];
+  const initials    = n => (n||'??').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+  let session = null, allStudents = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    try { session = JSON.parse(localStorage.getItem('ee_session')); } catch(e) {}
+    if (!session || !['teacher','admin','secretaria'].includes(session.role)) {
+      window.location.href = '../index.html'; return;
+    }
+    document.querySelector('.avatar').textContent          = initials(session.full_name);
+    document.querySelector('.user-name').textContent       = session.full_name || '—';
+    document.querySelector('.user-role-label').textContent = session.role === 'admin' ? 'Administrador' : (session.role === 'secretaria' ? 'Secretaria' : 'Professor');
+    if (session.role === 'admin' || session.role === 'secretaria') {
+      document.querySelector('.brand-role').textContent = session.role === 'secretaria' ? 'Painel da secretaria' : 'Painel do administrador';
+      document.getElementById('btnNewTeacher').style.display = '';
+      document.getElementById('navUsers').style.display = '';
+      document.getElementById('btnNewTeacherUsers').style.display = '';
+      document.getElementById('navConfig').style.display = '';
+      document.getElementById('navConfigDisabled').style.display = 'none';
+    }
+    document.querySelector('.topbar-left p').textContent   =
+      new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    if (session.role === 'secretaria') {
+      const m = document.getElementById('metricsSection');
+      if (m) m.style.display = 'none';
+    }
+    fetchAndApplyOrgBranding();
+    await Promise.all([loadMetrics(), loadStudents()]);
+  });
+
+  async function loadMetrics() {
+    const { data } = await db.rpc('get_teacher_metrics', { p_caller_id: session.id });
+    if (!data) return;
+    const $el = id => document.getElementById(id);
+    if ($el('metricTotal'))    $el('metricTotal').textContent    = data.total_students;
+    if ($el('metricActive'))   $el('metricActive').textContent   = data.active_today;
+    if ($el('metricScore'))    $el('metricScore').textContent    = data.avg_score + '%';
+    if ($el('metricInactive')) $el('metricInactive').textContent = data.inactive_count;
+  }
+
+  async function loadStudents() {
+    const { data, error } = await db.rpc('get_all_students_for_teacher', { p_caller_id: session.id });
+    if (error || !data) {
+      document.getElementById('studentList').innerHTML =
+        '<div style="padding:24px;text-align:center;color:var(--danger);font-size:13px;">Erro ao carregar alunos.</div>';
+      return;
+    }
+    allStudents = data;
+    renderStudents(allStudents);
+    renderInactiveStudents(allStudents);
+  }
+
+  function renderStudents(list) {
+    const el = document.getElementById('studentList');
+    if (!list.length) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Nenhum aluno cadastrado ainda.</div>';
+      return;
+    }
+    el.innerHTML = list.map(s => {
+      const done  = Number(s.lessons_completed || 0);
+      const score = Number(s.avg_score || 0);
+      const isNew = !s.last_activity;
+      const isInactive = s.days_inactive !== null && s.days_inactive > 14;
+      const sc   = isNew ? 'sp-new' : (isInactive ? 'sp-inactive' : 'sp-active');
+      const sl   = isNew ? 'Novo'   : (isInactive ? 'Inativo'     : 'Ativo');
+      const meta = done > 0 ? `${done} lição${done>1?'ões':''} · ${s.total_xp} XP` : 'Aguardando início';
+      return `
+        <div class="student-row" data-name="${(s.full_name||'').toLowerCase()}" data-code="${(s.code||'').toLowerCase()}" onclick="openStudentProfile('${s.id}')" style="cursor:pointer;">
+          <div class="student-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
+          <div class="student-info">
+            <div class="student-name">${s.full_name}</div>
+            <div class="student-meta">${meta}</div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" style="width:${score}%"></div></div>
+            <div class="progress-pct">${score}%</div>
+          </div>
+          <div class="status-pill ${sc}">${sl}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderInactiveStudents(list) {
+    const el = document.getElementById('inactiveList');
+    const inactive = list.filter(s => s.days_inactive !== null && s.days_inactive > 14)
+                         .sort((a,b) => b.days_inactive - a.days_inactive);
+    if (!inactive.length) {
+      el.innerHTML = '<div style="padding:20px 22px;font-size:13px;color:var(--ink-muted);">Nenhum aluno inativo no momento. 🎉</div>';
+      return;
+    }
+    el.innerHTML = inactive.map(s => `
+      <div class="inactive-row" onclick="openStudentProfile('${s.id}')" style="cursor:pointer;">
+        <div class="inactive-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
+        <div class="inactive-info">
+          <div class="inactive-name">${s.full_name}</div>
+          <div class="inactive-days">${s.days_inactive} dias sem acessar</div>
+        </div>
+        <button class="notify-btn" onclick="event.stopPropagation()">Lembrar</button>
+      </div>`).join('');
+  }
+
+  async function loadErrorExercises() {
+    const { data } = await db.rpc('get_error_rate_exercises', { p_caller_id: session.id });
+    const el = document.getElementById('errorExercises');
+    if (!data || !data.length) {
+      el.innerHTML = '<div style="padding:20px 22px;font-size:13px;color:var(--ink-muted);">Ainda não há dados de exercícios.</div>';
+      return;
+    }
+    el.innerHTML = data.map((ex, i) => {
+      const q = ex.question.length > 48 ? ex.question.slice(0,48)+'…' : ex.question;
+      return `
+        <div class="exercise-row">
+          <div class="ex-rank">${i+1}</div>
+          <div class="ex-info">
+            <div class="ex-title">${q}</div>
+            <div class="ex-lesson">${ex.module_title} · ${ex.lesson_title}</div>
+          </div>
+          <div class="ex-rate">${ex.error_pct}% erro</div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Modal Professor ──
+  function openModalTeacher() {
+    document.getElementById('modalTeacherOverlay').classList.add('open');
+    document.getElementById('modalTeacherFeedback').className = 'modal-feedback';
+    ['newTeacherName','newTeacherCode','newTeacherEmail','newTeacherPhone','newTeacherPass']
+      .forEach(id => document.getElementById(id).value = '');
+    setTimeout(() => document.getElementById('newTeacherName').focus(), 100);
+  }
+  function closeModalTeacher() { document.getElementById('modalTeacherOverlay').classList.remove('open'); }
+  function handleTeacherOverlayClick(e) { if (e.target === document.getElementById('modalTeacherOverlay')) closeModalTeacher(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalTeacher(); });
+
+  function toggleTeacherPass() {
+    const input = document.getElementById('newTeacherPass'), icon = document.getElementById('teacherEyeIcon');
+    const show  = input.type === 'password';
+    input.type  = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? '<line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+  function showTeacherFeedback(type, msg) {
+    document.getElementById('feedbackTeacherText').textContent = msg;
+    document.getElementById('feedbackTeacherIcon').innerHTML = type === 'success'
+      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+      : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+    document.getElementById('modalTeacherFeedback').className = 'modal-feedback ' + type;
+  }
+  function setTeacherSaveLoading(on) {
+    document.getElementById('btnSaveTeacher').disabled          = on;
+    document.getElementById('saveTeacherSpin').style.display   = on ? 'block' : 'none';
+    document.getElementById('saveTeacherLabel').textContent     = on ? 'Criando...' : 'Criar professor';
+  }
+  async function saveTeacher() {
+    const name  = document.getElementById('newTeacherName').value.trim();
+    const code  = document.getElementById('newTeacherCode').value.trim();
+    const email = document.getElementById('newTeacherEmail').value.trim();
+    const phone = document.getElementById('newTeacherPhone').value.trim();
+    const pass  = document.getElementById('newTeacherPass').value;
+    document.getElementById('modalTeacherFeedback').className = 'modal-feedback';
+    if (!name || !code || !pass) { showTeacherFeedback('error','Preencha nome, código e senha.'); return; }
+    if (!db)          { showTeacherFeedback('error','Erro de conexão. Recarregue a página.'); return; }
+    if (!session?.id) { showTeacherFeedback('error','Sessão inválida. Faça login novamente.'); return; }
+    if (!['admin','secretaria'].includes(session.role)) { showTeacherFeedback('error','Não autorizado.'); return; }
+    setTeacherSaveLoading(true);
+    try {
+      const { error } = await db.rpc('create_teacher', {
+        p_caller_id: session.id,
+        p_code: code,
+        p_full_name: name,
+        p_password: pass,
+        p_email: email || null,
+        p_phone: phone || null
+      });
+      if (error) throw error;
+      showTeacherFeedback('success', `Professor "${name}" criado com sucesso!`);
+      setTimeout(closeModalTeacher, 1600);
+    } catch (err) {
+      showTeacherFeedback('error', err.message || 'Erro ao criar professor.');
+    } finally { setTeacherSaveLoading(false); }
+  }
+  function filterStudents(q) {
+    q = q.toLowerCase();
+    renderStudents(allStudents.filter(s =>
+      (s.full_name||'').toLowerCase().includes(q) || (s.code||'').toLowerCase().includes(q)
+    ));
+  }
+
+  // ── Navegação entre views ──
+  function showView(view, navEl) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (navEl) navEl.classList.add('active');
+
+    const views = {
+      overview: document.getElementById('viewOverview'),
+      students: document.getElementById('viewStudents'),
+      users:    document.getElementById('viewUsers'),
+      config:   document.getElementById('viewConfig')
+    };
+
+    // Esconde todas
+    Object.values(views).forEach(v => { if (v) v.style.display = 'none'; });
+
+    const titles = { overview: 'Visão geral', students: 'Alunos', users: 'Usuários', config: 'Configurações' };
+    document.querySelector('.topbar-left h1').textContent = titles[view] || 'Visão geral';
+
+    if (views[view]) views[view].style.display = '';
+
+    if (view === 'users') loadStaff();
+    if (view === 'config') loadConfigView();
+    if (view === 'students') loadStudentView();
+  }
+
+  // ── View Alunos: carregamento e filtros ──
+  let allStudentsView = [];
+
+  async function loadStudentView() {
+    const el = document.getElementById('studentViewList');
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando alunos...</div>';
+    try {
+      const { data, error } = await db.rpc('get_all_students_for_teacher', { p_caller_id: session.id });
+      if (error) throw error;
+      allStudentsView = data || [];
+      applyStudentFilters();
+    } catch(err) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--danger);font-size:13px;">Erro ao carregar alunos.</div>';
+    }
+  }
+
+  function applyStudentFilters() {
+    const q      = (document.getElementById('studentViewSearch').value || '').toLowerCase();
+    const status = document.getElementById('studentViewStatus').value;
+    const sort   = document.getElementById('studentViewSort').value;
+
+    let list = allStudentsView.filter(s => {
+      const matchQ = !q || (s.full_name||'').toLowerCase().includes(q) || (s.code||'').toLowerCase().includes(q);
+      const isInactive = s.days_inactive !== null && s.days_inactive > 14;
+      const sStatus = s.status === 'inactive' ? 'inactive' : (isInactive ? 'inactive' : 'active');
+      const matchStatus = status === 'all' || sStatus === status;
+      return matchQ && matchStatus;
+    });
+
+    list.sort((a, b) => {
+      if (sort === 'name')      return (a.full_name||'').localeCompare(b.full_name||'');
+      if (sort === 'name_desc') return (b.full_name||'').localeCompare(a.full_name||'');
+      if (sort === 'newest')    return new Date(b.created_at) - new Date(a.created_at);
+      if (sort === 'oldest')    return new Date(a.created_at) - new Date(b.created_at);
+      return 0;
+    });
+
+    document.getElementById('studentViewCount').textContent = `${list.length} aluno${list.length !== 1 ? 's' : ''} encontrado${list.length !== 1 ? 's' : ''}`;
+    renderStudentView(list);
+  }
+
+  function renderStudentView(list) {
+    const el = document.getElementById('studentViewList');
+    if (!list.length) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Nenhum aluno encontrado.</div>';
+      return;
+    }
+    el.innerHTML = list.map(s => {
+      const isInactive = (s.status === 'inactive') || (s.days_inactive !== null && s.days_inactive > 14);
+      const statusLabel = isInactive ? 'Inativo' : (!s.last_activity ? 'Novo' : 'Ativo');
+      const statusClass = isInactive ? 'sp-inactive' : (!s.last_activity ? 'sp-new' : 'sp-active');
+      const created     = new Date(s.created_at).toLocaleDateString('pt-BR');
+      const score       = Number(s.avg_score || 0);
+      const done        = Number(s.lessons_completed || 0);
+      const meta        = done > 0 ? `${done} lição${done>1?'ões':''} · ${s.total_xp} XP · Desde ${created}` : `Aguardando início · Desde ${created}`;
+      const safeName    = (s.full_name||'').replace(/'/g, "\\'");
+
+      return `
+        <div class="student-row" style="flex-wrap:wrap;cursor:pointer;" onclick="openStudentProfile('${s.id}')">
+          <div class="student-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
+          <div class="student-info">
+            <div class="student-name">${s.full_name}</div>
+            <div class="student-meta">${meta}</div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" style="width:${score}%"></div></div>
+            <div class="progress-pct">${score}%</div>
+          </div>
+          <div class="status-pill ${statusClass}">${statusLabel}</div>
+          <div class="staff-actions" style="display:flex;gap:6px;margin-left:auto;" onclick="event.stopPropagation()">
+            <button class="notify-btn" onclick="openStudentPassModal('${s.id}','${safeName}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Senha
+            </button>
+            <button class="notify-btn" style="color:var(--danger,#e74c3c);border-color:var(--danger,#e74c3c);" onclick="openStudentDeleteModal('${s.id}','${safeName}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Excluir
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function loadStaff() {
+    const el = document.getElementById('staffList');
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando usuários...</div>';
+    try {
+      const { data, error } = await db.rpc('get_all_staff', { p_caller_id: session.id });
+      if (error) throw error;
+      renderStaff(data || []);
+    } catch(err) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--danger);font-size:13px;">Erro ao carregar usuários.</div>';
+    }
+  }
+
+  function renderStaff(list) {
+    const el = document.getElementById('staffList');
+    if (!list.length) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Nenhum usuário encontrado.</div>';
+      return;
+    }
+    const isSelf = id => id === session.id;
+    el.innerHTML = list.map(s => {
+      const roleLabel = (s.role === 'admin' || s.role === 'secretaria') ? 'Administrador' : 'Professor';
+      const rolePill  = (s.role === 'admin' || s.role === 'secretaria') ? 'sp-active' : 'sp-new';
+      const tbl       = s.role === 'admin' ? 'users' : 'teachers';
+      const email     = s.email || '—';
+      const created   = new Date(s.created_at).toLocaleDateString('pt-BR');
+      const actions   = `
+        <div class="staff-actions" style="display:flex;gap:6px;margin-left:auto;">
+          <button class="notify-btn" onclick="openPassModal('${s.id}','${tbl}','${s.full_name.replace(/'/g,"\\'")}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Senha
+          </button>
+          ${isSelf(s.id) ? '' : `<button class="notify-btn" style="color:var(--danger,#e74c3c);border-color:var(--danger,#e74c3c);" onclick="openDeleteModal('${s.id}','${tbl}','${s.full_name.replace(/'/g,"\\'")}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Excluir
+          </button>`}
+        </div>`;
+      return `
+        <div class="student-row" style="flex-wrap:wrap;">
+          <div class="student-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
+          <div class="student-info">
+            <div class="student-name">${s.full_name}</div>
+            <div class="student-meta">${email} · Desde ${created}</div>
+          </div>
+          <div class="status-pill ${rolePill}">${roleLabel}</div>
+          ${actions}
+        </div>`;
+    }).join('');
+  }
+
+  // ── Modal: Alterar Senha de Staff ──
+  let passTarget = { id: null, table: null, name: '' };
+
+  function openPassModal(id, table, name) {
+    passTarget = { id, table, name };
+    document.getElementById('passModalSubtitle').textContent = `Definir nova senha para ${name}.`;
+    document.getElementById('staffNewPass').value = '';
+    document.getElementById('passFeedback').className = 'modal-feedback';
+    document.getElementById('modalPassOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('staffNewPass').focus(), 100);
+  }
+  function closePassModal() { document.getElementById('modalPassOverlay').classList.remove('open'); }
+
+  function toggleStaffPass() {
+    const input = document.getElementById('staffNewPass'), icon = document.getElementById('staffEyeIcon');
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? '<line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+
+  function showPassFeedback(type, msg) {
+    document.getElementById('passFeedbackText').textContent = msg;
+    document.getElementById('passFeedbackIcon').innerHTML = type === 'success'
+      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+      : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+    document.getElementById('passFeedback').className = 'modal-feedback ' + type;
+  }
+
+  async function saveStaffPassword() {
+    const pass = document.getElementById('staffNewPass').value;
+    if (!pass) { showPassFeedback('error', 'Digite a nova senha.'); return; }
+    document.getElementById('btnSavePass').disabled = true;
+    document.getElementById('savePassSpin').style.display = 'block';
+    document.getElementById('savePassLabel').textContent = 'Salvando...';
+    try {
+      const { error } = await db.rpc('update_staff_password', {
+        p_caller_id: session.id,
+        p_target_id: passTarget.id,
+        p_target_table: passTarget.table,
+        p_new_password: pass
+      });
+      if (error) throw error;
+      showPassFeedback('success', `Senha de "${passTarget.name}" alterada!`);
+      setTimeout(closePassModal, 1400);
+    } catch(err) {
+      showPassFeedback('error', err.message || 'Erro ao alterar senha.');
+    } finally {
+      document.getElementById('btnSavePass').disabled = false;
+      document.getElementById('savePassSpin').style.display = 'none';
+      document.getElementById('savePassLabel').textContent = 'Salvar senha';
+    }
+  }
+
+  // ── Modal: Confirmar Exclusão ──
+  let deleteTarget = { id: null, table: null, name: '' };
+
+  function openDeleteModal(id, table, name) {
+    deleteTarget = { id, table, name };
+    document.getElementById('deleteModalSubtitle').textContent = `Tem certeza que deseja remover "${name}"? Esta ação desativará o acesso.`;
+    document.getElementById('deleteFeedback').className = 'modal-feedback';
+    document.getElementById('modalDeleteOverlay').classList.add('open');
+  }
+  function closeDeleteModal() { document.getElementById('modalDeleteOverlay').classList.remove('open'); }
+
+  function showDeleteFeedback(type, msg) {
+    document.getElementById('deleteFeedbackText').textContent = msg;
+    document.getElementById('deleteFeedbackIcon').innerHTML = type === 'success'
+      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+      : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+    document.getElementById('deleteFeedback').className = 'modal-feedback ' + type;
+  }
+
+  async function confirmDeleteStaff() {
+    document.getElementById('btnConfirmDelete').disabled = true;
+    document.getElementById('deleteConfirmSpin').style.display = 'block';
+    document.getElementById('deleteConfirmLabel').textContent = 'Removendo...';
+    try {
+      const { error } = await db.rpc('delete_staff', {
+        p_caller_id: session.id,
+        p_target_id: deleteTarget.id,
+        p_target_table: deleteTarget.table
+      });
+      if (error) throw error;
+      showDeleteFeedback('success', `"${deleteTarget.name}" foi removido.`);
+      setTimeout(() => {
+        closeDeleteModal();
+        if (deleteTarget.table === 'student') { loadStudentView(); loadStudents(); loadMetrics(); }
+        else loadStaff();
+      }, 1200);
+    } catch(err) {
+      showDeleteFeedback('error', err.message || 'Erro ao remover usuário.');
+    } finally {
+      document.getElementById('btnConfirmDelete').disabled = false;
+      document.getElementById('deleteConfirmSpin').style.display = 'none';
+      document.getElementById('deleteConfirmLabel').textContent = 'Sim, remover';
+    }
+  }
+
+  // ── Modal: Senha de Aluno (reutiliza modal de senha) ──
+  function openStudentPassModal(id, name) {
+    openPassModal(id, 'student', name);
+  }
+
+  // ── Modal: Excluir Aluno (reutiliza modal de exclusão) ──
+  function openStudentDeleteModal(id, name) {
+    openDeleteModal(id, 'student', name);
+  }
+
+  function doLogout() { localStorage.removeItem('ee_session'); window.location.href = '../index.html'; }
+
+  function closeMobileSidebar() {
+    document.getElementById('sidebar')?.classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay')?.classList.remove('visible');
+  }
+
+  function toggleMobileSidebar() {
+    const s = document.getElementById('sidebar');
+    const o = document.getElementById('sidebarOverlay');
+    const open = s?.classList.toggle('mobile-open');
+    o?.classList.toggle('visible', open);
+  }
+
+  async function saveStudent() {
+    const name = document.getElementById('newName').value.trim();
+    const code = document.getElementById('newCode').value.trim();
+    const pass = document.getElementById('newPass').value;
+    document.getElementById('modalFeedback').className = 'modal-feedback';
+    if (!name || !code || !pass) { showFeedback('error','Preencha todos os campos.'); return; }
+    if (pass.length < 1) { showFeedback('error','Digite uma senha.'); return; }
+    if (!db)     { showFeedback('error','Erro de conexão. Recarregue a página.'); return; }
+    if (!session?.id)  { showFeedback('error','Sessão inválida. Faça login novamente.'); return; }
+    setSaveLoading(true);
+    try {
+      const { error } = await db.rpc('create_student',
+        { p_caller_id: session.id, p_code: code, p_full_name: name, p_password: pass });
+      if (error) throw error;
+      showFeedback('success', `Aluno "${name}" criado com sucesso!`);
+      await Promise.all([loadStudents(), loadMetrics()]);
+      setTimeout(closeModal, 1600);
+    } catch (err) {
+      showFeedback('error', err.message || 'Erro ao criar aluno.');
+    } finally { setSaveLoading(false); }
+  }
+
+  // ── Branding da Org ──
+  function applyOrgBranding(branding) {
+    const logoUrl = branding?.logo_url || null;
+    const icon    = document.querySelector('.brand-icon');
+    const name    = document.querySelector('.brand-name');
+    const link    = document.querySelector('.brand-logo');
+    if (!icon || !name) return;
+    const role    = document.querySelector('.brand-role');
+    const wrapper = name?.parentElement;
+    if (logoUrl) {
+      icon.style.display = 'none';
+      name.innerHTML     = `<img src="${logoUrl}" alt="Logo" style="max-height:34px;max-width:140px;object-fit:contain;display:block;margin:0 auto;" />`;
+      if (link)    { link.style.flexDirection = 'column'; link.style.alignItems = 'center'; link.style.width = '100%'; }
+      if (wrapper) wrapper.style.textAlign = 'center';
+      if (role)    role.style.textAlign = 'center';
+    } else {
+      icon.style.display = '';
+      name.innerHTML     = 'English <span>Essential</span>';
+      if (link)    { link.style.flexDirection = ''; link.style.alignItems = ''; link.style.width = ''; }
+      if (wrapper) wrapper.style.textAlign = '';
+      if (role)    role.style.textAlign = '';
+    }
+  }
+
+  async function fetchAndApplyOrgBranding() {
+    if (!session?.organization_id) return;
+    // Cache local (5 min)
+    try {
+      const cache = JSON.parse(localStorage.getItem('ee_org_branding') || '{}');
+      const entry = cache[session.organization_id];
+      if (entry) applyOrgBranding(entry);
+    } catch(e) {}
+    // Busca fresca no servidor
+    try {
+      const { data } = await db.rpc('get_org_branding', { p_org_id: session.organization_id });
+      if (data) {
+        applyOrgBranding(data);
+        const cache = JSON.parse(localStorage.getItem('ee_org_branding') || '{}');
+        cache[session.organization_id] = data;
+        localStorage.setItem('ee_org_branding', JSON.stringify(cache));
+      }
+    } catch(e) {}
+  }
+
+  // ── Configurações: Branding da Org ──
+  let pendingLogoFile = null;
+
+  async function loadConfigView() {
+    if (!session.organization_id) return;
+    try {
+      const { data } = await db.rpc('get_org_branding', { p_org_id: session.organization_id });
+      const url = data?.logo_url || null;
+      applyLogoPreview(url);
+      if (url) document.getElementById('btnRemoveLogo').style.display = '';
+    } catch(e) {}
+  }
+
+  function applyLogoPreview(url) {
+    const img  = document.getElementById('logoPreviewImg');
+    const ph   = document.getElementById('logoPreviewPlaceholder');
+    if (url) {
+      img.src = url;
+      img.style.display = '';
+      ph.style.display  = 'none';
+    } else {
+      img.src = '';
+      img.style.display = 'none';
+      ph.style.display  = '';
+    }
+  }
+
+  function handleLogoSelect(e) {
+    const file = e.target.files[0];
+    if (file) processLogoFile(file);
+  }
+
+  function handleLogoDrop(e) {
+    e.preventDefault();
+    document.getElementById('logoDropZone').style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (file) processLogoFile(file);
+  }
+
+  function processLogoFile(file) {
+    const maxBytes = 512000;
+    if (file.size > maxBytes) {
+      showConfigFeedback('error', 'Arquivo muito grande. O máximo é 500 KB.');
+      return;
+    }
+    const allowed = ['image/png','image/svg+xml','image/jpeg','image/webp'];
+    if (!allowed.includes(file.type)) {
+      showConfigFeedback('error', 'Formato não suportado. Use PNG, SVG, JPEG ou WebP.');
+      return;
+    }
+    pendingLogoFile = file;
+    const reader = new FileReader();
+    reader.onload = e => applyLogoPreview(e.target.result);
+    reader.readAsDataURL(file);
+    document.getElementById('configFeedback').className = 'modal-feedback';
+  }
+
+  async function saveLogo() {
+    if (!pendingLogoFile && !document.getElementById('logoPreviewImg').src) {
+      showConfigFeedback('error', 'Selecione uma imagem primeiro.');
+      return;
+    }
+    if (!pendingLogoFile) { showConfigFeedback('error', 'Selecione uma nova imagem para salvar.'); return; }
+
+    setSaveLogoLoading(true);
+    try {
+      const ext  = pendingLogoFile.name.split('.').pop().toLowerCase();
+      const path = `${session.organization_id}/logo.${ext}`;
+
+      // Remove versão anterior se existir
+      await db.storage.from('org-assets').remove([path]);
+
+      const { error: upErr } = await db.storage.from('org-assets').upload(path, pendingLogoFile, {
+        upsert: true,
+        contentType: pendingLogoFile.type
+      });
+      if (upErr) throw upErr;
+
+      const { data: urlData } = db.storage.from('org-assets').getPublicUrl(path);
+      const publicUrl = urlData.publicUrl + '?v=' + Date.now();
+
+      const { error: rpcErr } = await db.rpc('update_org_branding', {
+        p_caller_id: session.id,
+        p_logo_url:  publicUrl
+      });
+      if (rpcErr) throw rpcErr;
+
+      // Atualiza cache local e aplica branding na página
+      const cached = JSON.parse(localStorage.getItem('ee_org_branding') || '{}');
+      cached[session.organization_id] = { logo_url: publicUrl };
+      localStorage.setItem('ee_org_branding', JSON.stringify(cached));
+      applyOrgBranding({ logo_url: publicUrl });
+
+      pendingLogoFile = null;
+      document.getElementById('btnRemoveLogo').style.display = '';
+      showConfigFeedback('success', 'Logo salva com sucesso!');
+    } catch(err) {
+      showConfigFeedback('error', err.message || 'Erro ao salvar logo.');
+    } finally { setSaveLogoLoading(false); }
+  }
+
+  async function removeLogo() {
+    if (!confirm('Remover a logo da organização?')) return;
+    setSaveLogoLoading(true);
+    try {
+      const exts = ['png','jpg','jpeg','svg','webp'];
+      await Promise.all(exts.map(e => db.storage.from('org-assets').remove([`${session.organization_id}/logo.${e}`])));
+
+      const { error } = await db.rpc('update_org_branding', { p_caller_id: session.id, p_logo_url: null });
+      if (error) throw error;
+
+      const cached = JSON.parse(localStorage.getItem('ee_org_branding') || '{}');
+      delete cached[session.organization_id];
+      localStorage.setItem('ee_org_branding', JSON.stringify(cached));
+      applyOrgBranding({ logo_url: null });
+
+      pendingLogoFile = null;
+      applyLogoPreview(null);
+      document.getElementById('logoFileInput').value = '';
+      document.getElementById('btnRemoveLogo').style.display = 'none';
+      showConfigFeedback('success', 'Logo removida.');
+    } catch(err) {
+      showConfigFeedback('error', err.message || 'Erro ao remover logo.');
+    } finally { setSaveLogoLoading(false); }
+  }
+
+  function setSaveLogoLoading(on) {
+    document.getElementById('btnSaveLogo').disabled  = on;
+    document.getElementById('saveLogoSpin').style.display = on ? 'block' : 'none';
+    document.getElementById('saveLogoLabel').textContent  = on ? 'Salvando...' : 'Salvar logo';
+  }
+
+  function showConfigFeedback(type, msg) {
+    const el = document.getElementById('configFeedback');
+    el.className = 'modal-feedback ' + type;
+    el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;">${type==='success'?'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg><span>${msg}</span>`;
+  }
+
+  // ── Modal: Perfil do Aluno ──
+  const RANK_CONFIG = {
+    'Iniciante': { min: 0,    max: 199,  next: 200,  color: '#8e8e93', bg: 'rgba(142,142,147,0.12)', label: 'Iniciante' },
+    'Bronze':    { min: 200,  max: 499,  next: 500,  color: '#cd7f32', bg: 'rgba(205,127,50,0.12)',  label: 'Bronze'    },
+    'Prata':     { min: 500,  max: 999,  next: 1000, color: '#a0a0b0', bg: 'rgba(160,160,176,0.12)', label: 'Prata'     },
+    'Ouro':      { min: 1000, max: 2499, next: 2500, color: '#f5c542', bg: 'rgba(245,197,66,0.12)',  label: 'Ouro'      },
+    'Platina':   { min: 2500, max: 4999, next: 5000, color: '#40c8e0', bg: 'rgba(64,200,224,0.12)',  label: 'Platina'   },
+    'Diamante':  { min: 5000, max: 9999, next: 5000, color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', label: 'Diamante'  },
+  };
+
+  const TYPE_LABELS = {
+    'multiple_choice': 'Múltipla escolha',
+    'text':            'Digitação',
+    'listening':       'Listening',
+    'speaking':        'Speaking',
+    'is_or_are':       'Is or Are',
+    'image_choice':    'Imagem',
+    'word_order':      'Ordem de palavras',
+  };
+
+  function rankSVG(rank, color) {
+    const shields = {
+      'Iniciante': `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.18"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><text x="24" y="33" text-anchor="middle" font-size="16" fill="${color}" font-weight="700" font-family="DM Sans,sans-serif">I</text></svg>`,
+      'Bronze':    `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.18"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><text x="24" y="33" text-anchor="middle" font-size="14" fill="${color}" font-weight="700" font-family="DM Sans,sans-serif">B</text></svg>`,
+      'Prata':     `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.22"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><text x="24" y="33" text-anchor="middle" font-size="14" fill="${color}" font-weight="700" font-family="DM Sans,sans-serif">P</text></svg>`,
+      'Ouro':      `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.22"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><path d="M18 22l4 4 8-8" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24" cy="34" r="2.5" fill="${color}"/></svg>`,
+      'Platina':   `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.18"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><polygon points="24,16 27,23 35,23 29,28 31,35 24,30 17,35 19,28 13,23 21,23" fill="${color}" opacity="0.85"/></svg>`,
+      'Diamante':  `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.18"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><polygon points="24,14 32,22 24,38 16,22" fill="${color}" opacity="0.7"/><polygon points="24,14 32,22 24,26 16,22" fill="${color}"/></svg>`,
+    };
+    return shields[rank] || shields['Iniciante'];
+  }
+
+  async function openStudentProfile(studentId) {
+    const overlay = document.getElementById('profileModalOverlay');
+    const body    = document.getElementById('profileModalBody');
+    overlay.classList.add('open');
+    body.innerHTML = '<div style="text-align:center;padding:48px 0;color:var(--ink-muted);font-size:14px;">Carregando perfil...</div>';
+
+    try {
+      const { data, error } = await db.rpc('get_student_profile', {
+        p_caller_id: session.id,
+        p_student_id: studentId
+      });
+      if (error) throw error;
+      if (!data) throw new Error('Perfil não encontrado.');
+      renderStudentProfileModal(data);
+    } catch(err) {
+      body.innerHTML = `<div style="text-align:center;padding:48px 0;color:var(--danger);font-size:14px;">${err.message || 'Erro ao carregar perfil.'}</div>`;
+    }
+  }
+
+  function closeStudentProfile() {
+    document.getElementById('profileModalOverlay').classList.remove('open');
+  }
+
+  function renderStudentProfileModal(d) {
+    const rank   = d.rank || 'Iniciante';
+    const cfg    = RANK_CONFIG[rank] || RANK_CONFIG['Iniciante'];
+    const xp     = d.total_xp || 0;
+    const streak = d.streak_days || 0;
+    const acc    = d.accuracy_pct || 0;
+    const done   = d.lessons_completed || 0;
+    const total  = d.total_answers || 0;
+    const correct= d.correct_answers || 0;
+    const wrong  = d.wrong_answers || 0;
+
+    // XP progress bar
+    const xpInLevel   = xp - cfg.min;
+    const xpNeeded    = cfg.next - cfg.min;
+    const xpPct       = rank === 'Diamante' ? 100 : Math.min(100, Math.round(xpInLevel / xpNeeded * 100));
+
+    // Joined date
+    const joined = d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' }) : '—';
+    const lastAct = d.last_activity ? new Date(d.last_activity).toLocaleDateString('pt-BR', { day:'numeric', month:'long' }) : null;
+
+    // Last lessons
+    const lessons = (d.last_lessons || []);
+    const lessonsHTML = lessons.length ? lessons.map(l => {
+      const score = Number(l.score || 0);
+      const bar = `<div style="flex:1;height:5px;background:var(--border,#e8e8e8);border-radius:4px;overflow:hidden;"><div style="height:100%;width:${score}%;background:${score>=70?'#22c55e':score>=40?'#f59e0b':'#ef4444'};border-radius:4px;"></div></div>`;
+      const dt = l.completed_at ? new Date(l.completed_at).toLocaleDateString('pt-BR',{day:'numeric',month:'short'}) : '';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border,#f0f0f0);">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:500;color:var(--ink,#1a1a2e);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l.lesson_title}</div>
+          <div style="font-size:11px;color:var(--ink-muted,#888);margin-top:1px;">${l.module_title} · ${l.course_title}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
+          ${bar}
+          <span style="font-size:12px;font-weight:600;color:${score>=70?'#22c55e':score>=40?'#f59e0b':'#ef4444'};min-width:32px;text-align:right;">${score}%</span>
+        </div>
+        <div style="font-size:11px;color:var(--ink-muted,#888);flex-shrink:0;">${dt}</div>
+      </div>`;
+    }).join('') : `<div style="padding:16px 0;font-size:13px;color:var(--ink-muted,#888);">Nenhuma lição concluída ainda.</div>`;
+
+    // Barras por habilidade
+    function skillBarsHTML(radar) {
+      const skills = [
+        { label: 'Escuta',  pct: Number(radar.escuta  || 0) },
+        { label: 'Fala',    pct: Number(radar.fala    || 0) },
+        { label: 'Leitura', pct: Number(radar.leitura || 0) },
+        { label: 'Escrita', pct: Number(radar.escrita || 0) },
+      ];
+      const hasData = skills.some(s => s.pct > 0);
+      if (!hasData) return `<div style="font-size:13px;color:var(--ink-muted,#888);padding:8px 0;">Nenhum exercício respondido ainda.</div>`;
+      return skills.map(({ label, pct }) => {
+        const color = pct >= 70 ? '#22c55e' : pct >= 40 ? '#f59e0b' : '#ef4444';
+        return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;">
+          <div style="font-size:12px;color:var(--ink,#1a1a2e);width:60px;flex-shrink:0;">${label}</div>
+          <div style="flex:1;height:6px;background:var(--border,#e8e8e8);border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;transition:width .4s;"></div>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:${color};min-width:36px;text-align:right;">${pct}%</div>
+        </div>`;
+      }).join('');
+    }
+
+    document.getElementById('profileModalBody').innerHTML = `
+      <!-- Header do perfil -->
+      <div style="display:flex;align-items:center;gap:18px;padding:4px 0 20px;">
+        <div style="position:relative;flex-shrink:0;">
+          <div class="student-avatar ${avatarColor(d.full_name)}" style="width:56px;height:56px;font-size:20px;">${initials(d.full_name)}</div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:18px;font-weight:600;color:var(--ink,#1a1a2e);">${d.full_name}</div>
+          <div style="font-size:12px;color:var(--ink-muted,#888);margin-top:2px;">Código: <b>${d.code}</b> · Desde ${joined}</div>
+          ${lastAct ? `<div style="font-size:11px;color:var(--ink-muted,#888);margin-top:2px;">Último acesso: ${lastAct}</div>` : ''}
+        </div>
+        <!-- Brasão de rank -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;padding:10px 14px;border-radius:12px;background:${cfg.bg};">
+          ${rankSVG(rank, cfg.color)}
+          <span style="font-size:11px;font-weight:700;color:${cfg.color};letter-spacing:.5px;text-transform:uppercase;">${rank}</span>
+        </div>
+      </div>
+
+      <!-- XP bar -->
+      <div style="margin-bottom:20px;padding:12px 14px;border-radius:10px;background:var(--bg-card2,#f7f7fa);border:1px solid var(--border,#ebebeb);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-size:12px;color:var(--ink-muted,#888);">XP Total</span>
+          <span style="font-size:13px;font-weight:700;color:${cfg.color};">${xp} XP${rank!=='Diamante'?' · próximo rank: '+cfg.next+' XP':' · Rank máximo'}</span>
+        </div>
+        <div style="height:7px;background:var(--border,#e8e8e8);border-radius:8px;overflow:hidden;">
+          <div style="height:100%;width:${xpPct}%;background:${cfg.color};border-radius:8px;transition:width .5s;"></div>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;">
+        <div style="text-align:center;padding:12px 8px;border-radius:10px;background:var(--bg-card2,#f7f7fa);border:1px solid var(--border,#ebebeb);">
+          <div style="font-size:22px;font-weight:700;color:var(--ink,#1a1a2e);">${done}</div>
+          <div style="font-size:11px;color:var(--ink-muted,#888);margin-top:2px;">Lições</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;border-radius:10px;background:var(--bg-card2,#f7f7fa);border:1px solid var(--border,#ebebeb);">
+          <div style="font-size:22px;font-weight:700;color:${acc>=70?'#22c55e':acc>=40?'#f59e0b':'#ef4444'};">${acc}%</div>
+          <div style="font-size:11px;color:var(--ink-muted,#888);margin-top:2px;">Acerto geral</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;border-radius:10px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);">
+          <div style="font-size:22px;font-weight:700;color:#22c55e;">${correct}</div>
+          <div style="font-size:11px;color:var(--ink-muted,#888);margin-top:2px;">Acertos</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;border-radius:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
+          <div style="font-size:22px;font-weight:700;color:#ef4444;">${wrong}</div>
+          <div style="font-size:11px;color:var(--ink-muted,#888);margin-top:2px;">Erros</div>
+        </div>
+      </div>
+
+      <!-- Últimas lições -->
+      <div style="margin-bottom:22px;">
+        <div style="font-size:13px;font-weight:600;color:var(--ink,#1a1a2e);margin-bottom:8px;">Últimas lições concluídas</div>
+        ${lessonsHTML}
+      </div>
+
+      <!-- Radar de habilidades -->
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink,#1a1a2e);margin-bottom:8px;">Desempenho por habilidade</div>
+        ${skillBarsHTML(d.radar || {})}
+      </div>
+    `;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeStudentProfile();
+    }
+  });
+</script>
+
+<!-- Modal: Perfil do Aluno -->
+<div class="modal-overlay" id="profileModalOverlay" onclick="if(event.target===this)closeStudentProfile()">
+  <div class="modal" style="max-width:540px;max-height:88vh;overflow-y:auto;">
+    <div class="modal-header" style="position:sticky;top:0;background:var(--bg-card,#fff);z-index:1;border-bottom:1px solid var(--border,#ebebeb);padding-bottom:14px;">
+      <div>
+        <h2>Perfil do aluno</h2>
+        <p>Histórico e desempenho detalhado</p>
+      </div>
+      <button class="modal-close" onclick="closeStudentProfile()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="profileModalBody" style="padding:20px 0 4px;"></div>
+  </div>
+</div>
+
+</body>
+</html>
