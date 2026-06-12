@@ -185,8 +185,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  margin: 4px 0 12px;
+  gap: clamp(6px,1.2dvh,14px);
+  margin: clamp(2px,0.5dvh,6px) 0 clamp(8px,1.5dvh,16px);
 }
 .mic-btn {
   display: flex;
@@ -196,8 +196,8 @@
   background: var(--cream, #f5f5f0);
   border: 2px solid var(--border, #e0e0e0);
   border-radius: 50%;
-  width: 90px;
-  height: 90px;
+  width: clamp(76px,12dvh,120px);
+  height: clamp(76px,12dvh,120px);
   cursor: pointer;
   transition: all .2s;
   color: var(--ink, #1a1a2e);
@@ -397,7 +397,7 @@
 /* ── Exercícios ──────────────────────────────────────────────── */
 #exerciseView { padding-top: 0 !important; margin-top: 0 !important; }
 .ex-topbar    { padding-top: 8px !important; padding-bottom: 8px !important; flex-shrink: 0; }
-.ex-card      { padding-top: 12px !important; margin-top: 0 !important; }
+.ex-card      { padding-top: clamp(10px,1.6dvh,20px) !important; margin-top: 0 !important; }
 
 /* ── Modo exercício: card centralizado, responsivo ────────────── */
 body.exercise-mode .content {
@@ -445,7 +445,7 @@ body.exercise-mode .ex-card {
   flex: unset !important;
   min-height: unset !important;
   margin: 0 !important;
-  padding-top: 20px !important;
+  padding-top: clamp(14px,2.6dvh,28px) !important;
   box-sizing: border-box;
   overflow-y: auto;
   overflow-x: hidden;
@@ -477,10 +477,10 @@ body.exercise-mode .ex-card {
 
 .ex-image {
   display: block;
-  margin: 0 auto 8px;
+  margin: 0 auto clamp(5px,1dvh,12px);
   width: auto;
   max-width: 100%;
-  max-height: min(208px, 27dvh);
+  max-height: clamp(140px,27dvh,300px);
   object-fit: contain;
   border-radius: 10px;
 }
@@ -488,8 +488,8 @@ body.exercise-mode .ex-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 8px;
-  gap: 6px;
+  margin-bottom: clamp(5px,1dvh,12px);
+  gap: clamp(4px,0.8dvh,8px);
 }
 .ex-image-wrap .ex-image { margin-bottom: 0; }
 
@@ -498,8 +498,8 @@ body.exercise-mode .ex-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin: 4px 0 12px;
+  gap: clamp(8px,1.5dvh,16px);
+  margin: clamp(2px,0.5dvh,6px) 0 clamp(8px,1.5dvh,16px);
 }
 .play-btn {
   display: flex;
@@ -509,8 +509,8 @@ body.exercise-mode .ex-card {
   background: none;
   border: 2px solid var(--accent, #4f46e5);
   border-radius: 50%;
-  width: 68px;
-  height: 68px;
+  width: clamp(54px,8.8dvh,90px);
+  height: clamp(54px,8.8dvh,90px);
   cursor: pointer;
   color: var(--accent, #4f46e5);
   transition: background .2s, transform .15s;
@@ -523,8 +523,8 @@ body.exercise-mode .ex-card {
 .play-btn-label { font-size: 11px; color: var(--ink-muted, #888); text-align: center; }
 
 .play-btn--overlay {
-  width: 68px;
-  height: 68px;
+  width: clamp(54px,8.8dvh,90px);
+  height: clamp(54px,8.8dvh,90px);
   background: none;
   border: 2px solid var(--accent, #4f46e5);
   color: var(--accent, #4f46e5);
@@ -536,12 +536,12 @@ body.exercise-mode .ex-card {
 .is-or-are-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 8px 0 12px;
+  gap: clamp(6px,1.3dvh,16px);
+  margin: clamp(4px,1dvh,12px) 0 clamp(8px,1.5dvh,16px);
 }
 .ia-btn {
-  padding: 14px 12px;
-  font-size: 18px;
+  padding: clamp(10px,1.8dvh,22px) 12px;
+  font-size: clamp(14px,2.3dvh,24px);
   font-weight: 700;
   letter-spacing: .04em;
   border: 2px solid var(--border, rgba(148,163,184,.28));
@@ -561,8 +561,8 @@ body.exercise-mode .ex-card {
 .img-choice-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin: 6px 0 10px;
+  gap: clamp(5px,1dvh,12px);
+  margin: clamp(4px,0.8dvh,10px) 0 clamp(6px,1.2dvh,14px);
 }
 .img-choice-btn {
   display: flex;
@@ -579,7 +579,7 @@ body.exercise-mode .ex-card {
 }
 .img-choice-btn img {
   width: 100%;
-  height: 168px;
+  height: clamp(110px,22dvh,220px);
   object-fit: contain;
   object-position: center;
   box-sizing: border-box;
@@ -606,8 +606,8 @@ body.exercise-mode .ex-card {
 .word-bank {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: 6px 0 8px;
+  gap: clamp(4px,0.8dvh,10px);
+  margin: clamp(4px,0.8dvh,10px) 0 clamp(5px,1dvh,12px);
 }
 .word-tile {
   padding: 8px 16px;
@@ -625,7 +625,7 @@ body.exercise-mode .ex-card {
 .word-tile:disabled { cursor: default; }
 
 .word-drop {
-  min-height: 44px;
+  min-height: clamp(36px,5.7dvh,56px);
   background: var(--bg-main, #f0f4ff);
   border: 1.5px dashed var(--border, rgba(148,163,184,.5));
   border-radius: 12px;
@@ -633,8 +633,8 @@ body.exercise-mode .ex-card {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  margin-bottom: 12px;
+  padding: clamp(6px,1dvh,12px) 12px;
+  margin-bottom: clamp(8px,1.5dvh,16px);
   cursor: pointer;
   transition: border-color .15s;
 }
