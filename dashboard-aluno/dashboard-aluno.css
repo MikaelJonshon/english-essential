@@ -902,6 +902,16 @@ body.exercise-mode #exerciseView.has-explanation .btn-expl-continue { font-size:
 .btn-cfg-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,.35); }
 
 /* Toast */
+.cfg-toast {
+  position: fixed; bottom: 28px; right: 28px; z-index: 600;
+  background: #fff; border: 1px solid rgba(59,130,246,.2);
+  color: #1e293b; padding: 11px 20px; border-radius: 12px;
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
+  box-shadow: 0 4px 20px rgba(0,0,0,.10);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .25s, transform .25s; pointer-events: none;
+}
+.cfg-toast.show { opacity: 1; transform: translateY(0); }
 
 /* ══════════════════════════════════════════════════════════════
    MOBILE OVERRIDE — sobrescreve !important do layout grid
