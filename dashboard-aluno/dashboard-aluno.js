@@ -1534,7 +1534,7 @@ function showExplanationSlide(expl) {
   const total = currentLesson.exercises.length;
   const pct   = total > 0 ? Math.round((currentExIdx / total) * 100) : 0;
   document.getElementById('exProgressFill').style.width  = pct + '%';
-  document.getElementById('exProgressLabel').textContent = `Exercício ${currentExIdx + 1} de ${total}`;
+  // label de progresso removido do HTML
   document.getElementById('exCounter').textContent       = `${currentExIdx + 1}/${total}`;
 
   document.getElementById('exCard').innerHTML = `

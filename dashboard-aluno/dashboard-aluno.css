@@ -15,12 +15,12 @@
 .expl-header {
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   border-radius: 16px 16px 0 0;
-  padding: 22px 24px 20px;
+  padding: clamp(12px,2.8dvh,26px) 24px clamp(10px,2.5dvh,22px);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
+  gap: clamp(4px,0.9dvh,10px);
 }
 .expl-badge {
   display: inline-flex;
@@ -38,7 +38,7 @@
 }
 .expl-title {
   font-family: 'Nunito', sans-serif;
-  font-size: 20px;
+  font-size: clamp(15px,2.6dvh,24px);
   font-weight: 800;
   color: #fff;
   letter-spacing: 0.3px;
@@ -46,7 +46,7 @@
 }
 .expl-subtitle {
   font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
+  font-size: clamp(11px,1.6dvh,15px);
   color: rgba(255,255,255,0.75);
   font-weight: 400;
 }
@@ -56,14 +56,14 @@
   border: 1.5px solid rgba(37,99,235,0.12);
   border-top: none;
   border-radius: 0 0 16px 16px;
-  padding: 20px 22px;
+  padding: clamp(12px,2.5dvh,24px) clamp(14px,2vw,26px);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: clamp(8px,1.8dvh,20px);
 }
 .expl-intro {
   font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
+  font-size: clamp(12px,1.8dvh,16px);
   color: var(--ink, #1f2937);
   line-height: 1.7;
   text-align: center;
@@ -76,17 +76,17 @@
   color: #fff;
   font-family: 'Nunito', sans-serif;
   font-weight: 800;
-  font-size: 13px;
+  font-size: clamp(11px,1.6dvh,15px);
   letter-spacing: 2px;
   text-align: center;
-  padding: 10px 16px;
+  padding: clamp(6px,1.2dvh,12px) 16px;
   border-radius: 10px;
 }
 
 .expl-examples {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: clamp(5px,1dvh,10px);
 }
 .expl-row {
   display: grid;
@@ -96,23 +96,23 @@
   background: #f8fbff;
   border: 1px solid rgba(37,99,235,0.12);
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: clamp(6px,1.2dvh,12px) 14px;
 }
 .expl-pt {
   font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
+  font-size: clamp(11px,1.6dvh,14px);
   color: var(--ink-muted, #64748b);
   font-weight: 500;
   text-align: right;
 }
 .expl-arrow {
-  font-size: 15px;
+  font-size: clamp(12px,1.8dvh,16px);
   color: #2563eb;
   font-weight: 700;
 }
 .expl-en {
   font-family: 'Nunito', sans-serif;
-  font-size: 15px;
+  font-size: clamp(12px,1.9dvh,17px);
   font-weight: 800;
   color: var(--ink, #1f2937);
   letter-spacing: 0.3px;
@@ -125,9 +125,9 @@
   background: #f0f5ff;
   border: 1.5px solid rgba(37,99,235,0.18);
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: clamp(8px,1.7dvh,18px) 16px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 13.5px;
+  font-size: clamp(11px,1.7dvh,15px);
   color: var(--ink, #1f2937);
   line-height: 1.65;
   text-align: center;
@@ -137,7 +137,7 @@
 
 .expl-note {
   font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
+  font-size: clamp(11px,1.6dvh,14px);
   color: var(--ink-muted, #64748b);
   text-align: center;
   line-height: 1.6;
@@ -149,13 +149,13 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 18px;
+  margin-top: clamp(10px,2dvh,22px);
   width: 100%;
-  padding: 14px;
+  padding: clamp(10px,1.8dvh,16px);
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #fff;
   font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
+  font-size: clamp(13px,1.9dvh,17px);
   font-weight: 600;
   border: none;
   border-radius: 12px;
