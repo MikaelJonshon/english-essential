@@ -754,9 +754,9 @@ function renderExercise() {
   saveLessonDraft();
   const exercises = currentLesson.exercises, total = exercises.length, idx = currentExIdx, ex = exercises[idx];
   const pct = total > 0 ? Math.round((idx / total) * 100) : 0;
-  document.getElementById('exProgressFill').style.width  = pct + '%';
-  // label de progresso removido do HTML
-  document.getElementById('exCounter').textContent       = `${idx + 1}/${total}`;
+  // barra de progresso removida do HTML
+  // contador removido do HTML
+  document.getElementById('exerciseView').classList.remove('has-explanation');
   selectedOption = null;
   wordOrderPlaced = [];
 
@@ -1532,10 +1532,9 @@ const LESSON_EXPLANATIONS = {
 
 function showExplanationSlide(expl) {
   const total = currentLesson.exercises.length;
-  const pct   = total > 0 ? Math.round((currentExIdx / total) * 100) : 0;
-  document.getElementById('exProgressFill').style.width  = pct + '%';
-  // label de progresso removido do HTML
-  document.getElementById('exCounter').textContent       = `${currentExIdx + 1}/${total}`;
+  // barra de progresso removida do HTML
+  // contador removido do HTML
+  document.getElementById('exerciseView').classList.add('has-explanation');
 
   document.getElementById('exCard').innerHTML = `
     <div class="explanation-slide">

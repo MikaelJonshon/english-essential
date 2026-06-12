@@ -402,19 +402,19 @@
 /* ── Modo exercício: card centralizado, responsivo ────────────── */
 body.exercise-mode .content {
   overflow: hidden;
-  padding-top: 0;
-  padding-bottom: 0;
+  padding: 0 !important;
 }
 
-/* exerciseView = flex, centraliza o card abaixo do topbar */
+/* exerciseView = flex, card próximo ao topo (abaixo do topbar) */
 body.exercise-mode #exerciseView {
   position: relative !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   height: calc(100dvh - 62px) !important;
-  padding-top: 52px !important; /* reserva espaço para o topbar flutuante */
+  padding-top: clamp(8px,1.2dvh,12px) !important; /* alinhado com btn Voltar */
+  padding-bottom: clamp(8px,1.5dvh,16px) !important;
   box-sizing: border-box !important;
   overflow: hidden;
 }
@@ -441,7 +441,7 @@ body.exercise-mode .ex-card {
   width: min(700px, 100%) !important;
   max-width: unset !important;
   height: auto !important;
-  max-height: calc(100dvh - 114px) !important; /* 62px topbar + 52px ex-topbar */
+  max-height: calc(100dvh - 140px) !important;
   flex: unset !important;
   min-height: unset !important;
   margin: 0 !important;
@@ -457,10 +457,9 @@ body.exercise-mode .ex-card {
 @media (max-width: 900px) {
   body.exercise-mode #exerciseView {
     height: calc(100dvh - 56px) !important;
-    padding-top: 48px !important;
   }
   body.exercise-mode .ex-card {
-    max-height: calc(100dvh - 104px) !important;
+    max-height: calc(100dvh - 120px) !important;
   }
 }
 
@@ -468,12 +467,37 @@ body.exercise-mode .ex-card {
 @media (max-width: 480px) {
   body.exercise-mode #exerciseView {
     height: calc(100dvh - 52px) !important;
-    padding-top: 44px !important;
   }
   body.exercise-mode .ex-card {
-    max-height: calc(100dvh - 96px) !important;
+    max-height: calc(100dvh - 110px) !important;
   }
 }
+
+/* Modo explicação: view scrollável, card sem limite de altura */
+body.exercise-mode #exerciseView.has-explanation {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  align-items: center !important;
+  padding-bottom: 32px !important;
+}
+body.exercise-mode #exerciseView.has-explanation .ex-card {
+  width: min(1100px, 84vw) !important;
+  max-height: unset !important;
+  overflow: visible !important;
+}
+/* Fontes fixas — mesmos tamanhos do monitor grande */
+body.exercise-mode #exerciseView.has-explanation .expl-title    { font-size: 26px; }
+body.exercise-mode #exerciseView.has-explanation .expl-subtitle { font-size: 15px; }
+body.exercise-mode #exerciseView.has-explanation .expl-header   { padding: 22px 28px 20px; gap: 8px; }
+body.exercise-mode #exerciseView.has-explanation .expl-intro    { font-size: 16px; }
+body.exercise-mode #exerciseView.has-explanation .expl-pt       { font-size: 14px; }
+body.exercise-mode #exerciseView.has-explanation .expl-en       { font-size: 17px; }
+body.exercise-mode #exerciseView.has-explanation .expl-box      { font-size: 15px; padding: 16px 24px; }
+body.exercise-mode #exerciseView.has-explanation .expl-note     { font-size: 14px; }
+body.exercise-mode #exerciseView.has-explanation .expl-banner   { font-size: 14px; padding: 10px 20px; }
+body.exercise-mode #exerciseView.has-explanation .expl-body     { gap: 18px; padding: 24px clamp(20px,4vw,48px); }
+body.exercise-mode #exerciseView.has-explanation .expl-row      { padding: 12px 18px; }
+body.exercise-mode #exerciseView.has-explanation .btn-expl-continue { font-size: 15px; padding: 14px; margin-top: 20px; }
 
 .ex-image {
   display: block;

@@ -311,16 +311,6 @@ html, body { height:100%; font-family:'DM Sans',sans-serif; background:var(--bg)
 }
 .btn-back:hover { border-color:var(--blue-light); color:var(--blue-light); }
 .btn-back svg { width:15px; height:15px; }
-.ex-progress-wrap { flex:1; }
-.ex-progress-label { font-size:12px; color:var(--white-muted); margin-bottom:6px; font-weight:500; }
-.ex-progress-track { height:6px; background:rgba(255,255,255,0.06); border-radius:100px; overflow:hidden; }
-.ex-progress-fill {
-  height:100%; border-radius:100px;
-  background:linear-gradient(90deg, var(--blue), var(--cyan));
-  transition:width 0.4s ease;
-  box-shadow:0 0 8px var(--cyan-glow);
-}
-.ex-counter { font-size:13px; font-weight:700; color:var(--white-soft); white-space:nowrap; }
 
 .ex-card {
   background:var(--bg-card); border:1px solid var(--border);
@@ -347,10 +337,10 @@ html, body { height:100%; font-family:'DM Sans',sans-serif; background:var(--bg)
 /* Opções */
 .options-grid { display:grid; grid-template-columns:1fr 1fr; gap:clamp(6px,1.3dvh,16px); }
 .option-btn {
-  padding:clamp(8px,1.4dvh,16px) 16px; border-radius:14px;
+  padding:clamp(11px,1.7dvh,18px) 16px; border-radius:14px;
   border:1.5px solid var(--border);
   background:var(--bg-card2);
-  font-family:'Nunito',sans-serif; font-size:clamp(12px,1.8dvh,17px); font-weight:600;
+  font-family:'Nunito',sans-serif; font-size:clamp(15px,2.1dvh,20px); font-weight:600;
   color:var(--white); cursor:pointer; text-align:left;
   transition:all 0.15s; line-height:1.4;
 }
