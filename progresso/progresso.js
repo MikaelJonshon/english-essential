@@ -714,18 +714,7 @@ function activateRank(idx) {
   const xp    = Number(document.getElementById('statXp')?.textContent?.replace(/\./g,'') || 0);
   const level = Math.floor(xp / 1000) + 1;
   renderRankPanel(level);
-  // Toast
-  const r = RANKS[idx];
-  const toast = document.getElementById('cfgToast') || (() => {
-    const el = document.createElement('div');
-    el.id = 'cfgToast';
-    el.className = 'cfg-toast';
-    document.body.appendChild(el);
-    return el;
-  })();
-  toast.textContent = `${r.name} ativado como seu emblema!`;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
+  // notificação de emblema removida
 }
 
 // ── Lista de lições ───────────────────────────────────────────────────────────
