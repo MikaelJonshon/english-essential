@@ -22,6 +22,15 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+// ── Validação de URL — apenas domínio Supabase permitido ──────────────────────
+function isSafeUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' && u.hostname === 'jhpqdxqsgnyqtzqvggvx.supabase.co';
+  } catch { return false; }
+}
+
 // ── Branding da Org ────────────────────────────────────────────────────────────
 function applyOrgBranding(branding) {
   const logoUrl = branding?.logo_url || null;
@@ -31,7 +40,7 @@ function applyOrgBranding(branding) {
   if (!icon || !name) return;
   const role    = document.querySelector('.brand-role');
   const wrapper = name?.parentElement;
-  if (logoUrl) {
+  if (logoUrl && isSafeUrl(logoUrl)) {
     icon.style.display = 'none';
     // Usar createElement para evitar XSS via logo_url malicioso
     name.textContent = '';
@@ -751,7 +760,7 @@ async function openLesson(lessonId, lessonTitle, pathClassIndex = null) {
 
   const { data, error } = await db.rpc('get_lesson_content', { p_token: session.token, p_lesson_id: lessonId });
   if (error || !data) { document.getElementById('exCard').innerHTML = '<div class="loading-center" style="color:var(--danger);">Erro ao carregar lição.</div>'; return; }
-  if (data.locked) { document.getElementById('exCard').innerHTML = `<div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;margin-bottom:16px;">🔒</div><p style="font-size:15px;color:var(--ink-muted);">${data.message}</p></div>`; return; }
+  if (data.locked) { document.getElementById('exCard').innerHTML = `<div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;margin-bottom:16px;">🔒</div><p style="font-size:15px;color:var(--ink-muted);">${escapeHtml(data.message)}</p></div>`; return; }
 
   const prevBestScore = Number(data.progress?.score || 0);
   currentLesson = { id: lessonId, title: lessonTitle, exercises: data.exercises || [], pathClassIndex, bestScore: prevBestScore };
@@ -986,6 +995,7 @@ function queueExerciseAutoAudio(ex) {
   setTimeout(() => playAudio(ex.audio_url), 300);
 }
 function playAudio(url) {
+  if (!isSafeUrl(url)) return;
   if (_currentAudio) { _currentAudio.pause(); _currentAudio = null; }
   const btn = document.getElementById('playBtn');
   _currentAudio = new Audio(url);
@@ -1068,20 +1078,24 @@ function _micSetUI(estado, extra) {
 }
 
 // ── Confirmar resposta ────────────────────────────────────────────────────────
+let _confirmProcessing = false;
 async function confirmAnswer() {
+  if (_confirmProcessing) return;
+  _confirmProcessing = true;
   const ex = currentLesson.exercises[currentExIdx];
   let answer = '';
-  if (ex.question_type === 'multiple_choice' || ex.question_type === 'listening') { if (!selectedOption) return; answer = selectedOption; }
-  else if (ex.question_type === 'speaking') { if (!speakingAnswer) return; answer = speakingAnswer; speakingAnswer = ''; }
-  else if (ex.question_type === 'is_or_are') { if (!selectedOption) return; answer = selectedOption; }
-  else if (ex.question_type === 'image_choice') { if (!selectedOption) return; answer = selectedOption; }
+  const _bail = () => { _confirmProcessing = false; };
+  if (ex.question_type === 'multiple_choice' || ex.question_type === 'listening') { if (!selectedOption) { _bail(); return; } answer = selectedOption; }
+  else if (ex.question_type === 'speaking') { if (!speakingAnswer) { _bail(); return; } answer = speakingAnswer; speakingAnswer = ''; }
+  else if (ex.question_type === 'is_or_are') { if (!selectedOption) { _bail(); return; } answer = selectedOption; }
+  else if (ex.question_type === 'image_choice') { if (!selectedOption) { _bail(); return; } answer = selectedOption; }
   else if (ex.question_type === 'word_order') {
     answer = wordOrderPlaced.join(' ').trim();
-    if (!answer) return;
+    if (!answer) { _bail(); return; }
   }
   else {
     answer = (document.getElementById('textAnswer')?.value || '').trim();
-    if (!answer) return;
+    if (!answer) { _bail(); return; }
   }
 
   const btn = document.getElementById('btnConfirm');
@@ -1091,7 +1105,12 @@ async function confirmAnswer() {
 
   const { data, error } = await db.rpc('submit_answer', { p_token: session.token, p_exercise_id: ex.id, p_answer: answer });
   document.getElementById('btnSpin').style.display = 'none';
-  if (error || !data) { document.getElementById('btnLabel').textContent = 'Confirmar'; btn.disabled = false; return; }
+  if (error || !data) {
+    document.getElementById('btnLabel').textContent = 'Confirmar';
+    btn.disabled = false;
+    _confirmProcessing = false;
+    return;
+  }
 
   answers[ex.id] = { is_correct: data.is_correct, xp_earned: data.xp_earned };
   showAnswerFeedback(data, ex, answer);
@@ -1103,6 +1122,7 @@ async function confirmAnswer() {
   document.getElementById('btnLabel').textContent = isLast ? 'Ver resultado' : 'Próximo';
   btn.onclick  = isLast ? finishLesson : nextExercise;
   btn.disabled = false;
+  _confirmProcessing = false;
 }
 
 // ── Explicações Gramaticais (entre exercícios) ────────────────────────────────

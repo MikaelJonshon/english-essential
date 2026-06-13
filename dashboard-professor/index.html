@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://jhpqdxqsgnyqtzqvggvx.supabase.co; connect-src https://jhpqdxqsgnyqtzqvggvx.supabase.co; media-src https://jhpqdxqsgnyqtzqvggvx.supabase.co; frame-src 'none'; object-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://jhpqdxqsgnyqtzqvggvx.supabase.co; connect-src https://jhpqdxqsgnyqtzqvggvx.supabase.co https://cdn.jsdelivr.net; media-src https://jhpqdxqsgnyqtzqvggvx.supabase.co; frame-src 'none'; object-src 'none';">
 <title>English Essential — Professor</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="dashboard-professor.css">
@@ -550,6 +550,15 @@
   }
   const esc = escapeHtml;
 
+  // ── Validação de URL — apenas domínio Supabase permitido ──────────────────
+  function isSafeUrl(url) {
+    if (!url || typeof url !== 'string') return false;
+    try {
+      const u = new URL(url);
+      return u.protocol === 'https:' && u.hostname === 'jhpqdxqsgnyqtzqvggvx.supabase.co';
+    } catch { return false; }
+  }
+
   let session = null, allStudents = [];
 
   function forceLogout() {
@@ -1059,7 +1068,7 @@
     if (!icon || !name) return;
     const role    = document.querySelector('.brand-role');
     const wrapper = name?.parentElement;
-    if (logoUrl) {
+    if (logoUrl && isSafeUrl(logoUrl)) {
       icon.style.display = 'none';
       // Usar createElement para evitar XSS via logo_url malicioso
       name.textContent = '';
@@ -1235,7 +1244,7 @@
   function showConfigFeedback(type, msg) {
     const el = document.getElementById('configFeedback');
     el.className = 'modal-feedback ' + type;
-    el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;">${type==='success'?'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg><span>${msg}</span>`;
+    el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;">${type==='success'?'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg><span>${esc(msg)}</span>`;
   }
 
   // ── Modal: Perfil do Aluno ──
@@ -1285,7 +1294,7 @@
       if (!data) throw new Error('Perfil não encontrado.');
       renderStudentProfileModal(data);
     } catch(err) {
-      body.innerHTML = `<div style="text-align:center;padding:48px 0;color:var(--danger);font-size:14px;">${err.message || 'Erro ao carregar perfil.'}</div>`;
+      body.innerHTML = `<div style="text-align:center;padding:48px 0;color:var(--danger);font-size:14px;">${esc(err.message || 'Erro ao carregar perfil.')}</div>`;
     }
   }
 

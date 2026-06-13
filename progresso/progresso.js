@@ -7,6 +7,17 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 let session = null;
 const initials = n => (n||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+const esc = escapeHtml;
+
 function doLogout() { localStorage.removeItem('ee_session'); window.location.href = '../index.html'; }
 
 // ── Init ────────────────────────────────────────────────────────────────────
@@ -747,8 +758,8 @@ function renderLessons(lessons) {
       : '';
     return `
       <div class="prog-lesson-row">
-        <span class="prog-lesson-module">${l.module_title || ''}</span>
-        <span class="prog-lesson-title">${l.lesson_title}</span>
+        <span class="prog-lesson-module">${esc(l.module_title || '')}</span>
+        <span class="prog-lesson-title">${esc(l.lesson_title)}</span>
         <span style="font-size:11px;color:var(--white-muted,#94a3b8);flex-shrink:0;">${date}</span>
         ${scoreHtml}
       </div>`;
