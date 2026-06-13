@@ -813,12 +813,12 @@ function renderExercise() {
   if (ex.question_type === 'is_or_are') {
     const opts = ex.options && ex.options.length ? ex.options : [{option_text:'IS'},{option_text:'ARE'}];
     answerHTML = `<div class="is-or-are-grid">${opts.map(o =>
-      `<button class="ia-btn" data-val="${o.option_text}" onclick="selectIsOrAre(this,'${o.option_text}')">${o.option_text}</button>`
+      `<button class="ia-btn" data-val="${escapeHtml(o.option_text)}" onclick="selectIsOrAre(this, this.dataset.val)">${escapeHtml(o.option_text)}</button>`
     ).join('')}</div>`;
   } else if (ex.question_type === 'image_choice' && ex.options) {
     answerHTML = `<div class="img-choice-grid">${ex.options.map(o =>
-      `<button class="img-choice-btn" data-val="${o.option_text}" onclick="selectImageChoice(this,'${o.option_text}')">
-        <img src="${o.image_url || ''}" alt="${o.option_text}" loading="lazy" onerror="this.style.display='none'">
+      `<button class="img-choice-btn" data-val="${escapeHtml(o.option_text)}" onclick="selectImageChoice(this, this.dataset.val)">
+        <img src="${escapeHtml(o.image_url || '')}" alt="${escapeHtml(o.option_text)}" loading="lazy" onerror="this.style.display='none'">
       </button>`
     ).join('')}</div>`;
   } else if (ex.question_type === 'word_order' && ex.options) {
@@ -827,7 +827,7 @@ function renderExercise() {
     answerHTML = `
       ${ex.audio_url ? `
       <div class="listening-area" style="margin:0 0 14px;">
-        <button class="play-btn" id="playBtn" onclick="playAudio('${ex.audio_url}')">
+        <button class="play-btn" id="playBtn" data-url="${escapeHtml(ex.audio_url)}" onclick="playAudio(this.dataset.url)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
             <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/>
           </svg>
@@ -835,25 +835,25 @@ function renderExercise() {
         <div class="word-drop-hint" style="margin:0;">Ouça, leia e organize as palavras</div>
       </div>` : ''}
       <div class="word-bank" id="wordBank">${shuffled.map(w =>
-        `<button class="word-tile" data-word="${w}" onclick="placeWord(this,'${w}')">${w}</button>`
+        `<button class="word-tile" data-word="${escapeHtml(w)}" onclick="placeWord(this, this.dataset.word)">${escapeHtml(w)}</button>`
       ).join('')}</div>
       <div class="word-drop" id="wordDrop" onclick="removeLastWord()">
         <span class="word-drop-hint" id="wordDropHint">Toque nas palavras na ordem certa</span>
       </div>`;
   } else if (ex.question_type === 'multiple_choice' && ex.options) {
     answerHTML = `<div class="options-grid">${ex.options.map(o =>
-      `<button class="option-btn" data-id="${o.id}" onclick="selectOption(this,'${o.id}')">${o.option_text}</button>`
+      `<button class="option-btn" data-id="${escapeHtml(o.id)}" onclick="selectOption(this, this.dataset.id)">${escapeHtml(o.option_text)}</button>`
     ).join('')}</div>`;
   } else if (ex.question_type === 'listening' && ex.options) {
     answerHTML = `
       <div class="listening-area">
-        <button class="play-btn" id="playBtn" onclick="playAudio('${ex.audio_url}')">
+        <button class="play-btn" id="playBtn" data-url="${escapeHtml(ex.audio_url)}" onclick="playAudio(this.dataset.url)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
             <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/>
           </svg>
         </button>
         <div class="options-grid" style="width:100%">${ex.options.map(o =>
-          `<button class="option-btn" data-id="${o.id}" onclick="selectOption(this,'${o.id}')">${o.option_text}</button>`
+          `<button class="option-btn" data-id="${escapeHtml(o.id)}" onclick="selectOption(this, this.dataset.id)">${escapeHtml(o.option_text)}</button>`
         ).join('')}</div>
       </div>`;
   } else if (ex.question_type === 'speaking') {
@@ -877,21 +877,21 @@ function renderExercise() {
   const imageHTML = ex.image_url
     ? (ex.question_type === 'speaking' && ex.audio_url
         ? `<div class="ex-image-wrap">
-             <img class="ex-image" src="${ex.image_url}" alt="" loading="lazy" style="margin-bottom:0">
+             <img class="ex-image" src="${escapeHtml(ex.image_url)}" alt="" loading="lazy" style="margin-bottom:0">
              <div class="play-btn-wrap">
                <span class="play-btn-label">Pressione para ouvir novamente</span>
-               <button class="play-btn play-btn--overlay" id="playBtn" onclick="playAudio('${ex.audio_url}')" title="Ouvir pronúncia">
+               <button class="play-btn play-btn--overlay" id="playBtn" data-url="${escapeHtml(ex.audio_url)}" onclick="playAudio(this.dataset.url)" title="Ouvir pronúncia">
                  <svg viewBox="0 0 24 24" fill="none" width="28" height="28">
                    <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>
                  </svg>
                </button>
              </div>
            </div>`
-        : `<img class="ex-image" src="${ex.image_url}" alt="" loading="lazy">`)
+        : `<img class="ex-image" src="${escapeHtml(ex.image_url)}" alt="" loading="lazy">`)
     : '';
   const audioHTML = ex.audio_url && ex.question_type !== 'speaking' && ex.question_type !== 'word_order' && ex.question_type !== 'listening'
     ? `<div class="listening-area" style="margin:0 0 14px;">
-         <button class="play-btn" id="playBtn" onclick="playAudio('${ex.audio_url}')">
+         <button class="play-btn" id="playBtn" data-url="${escapeHtml(ex.audio_url)}" onclick="playAudio(this.dataset.url)">
            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
              <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/>
            </svg>
@@ -901,10 +901,10 @@ function renderExercise() {
     : '';
 
   document.getElementById('exCard').innerHTML = `
-    <div class="ex-type-badge">${typeIcons[ex.question_type]||''} ${typeLabels[ex.question_type]||ex.question_type}</div>
+    <div class="ex-type-badge">${typeIcons[ex.question_type]||''} ${escapeHtml(typeLabels[ex.question_type]||ex.question_type)}</div>
     ${imageHTML}
     ${audioHTML}
-    <div class="ex-question">${ex.question}</div>
+    <div class="ex-question">${escapeHtml(ex.question)}</div>
     ${answerHTML}
     <div class="ex-feedback" id="exFeedback">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="feedbackIcon"><polyline points="20 6 9 17 4 12"/></svg>

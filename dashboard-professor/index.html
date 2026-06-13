@@ -537,6 +537,18 @@
   const avatarColor = n => COLORS[(n||'').charCodeAt(0) % COLORS.length];
   const initials    = n => (n||'??').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 
+  // ── Utilitário de escape HTML (previne XSS) ───────────────────────────────
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+  const esc = escapeHtml;
+
   let session = null, allStudents = [];
 
   function forceLogout() {
@@ -615,11 +627,11 @@
       const sl   = isNew ? 'Novo'   : (isInactive ? 'Inativo'     : 'Ativo');
       const meta = done > 0 ? `${done} lição${done>1?'ões':''} · ${s.total_xp} XP` : 'Aguardando início';
       return `
-        <div class="student-row" data-name="${(s.full_name||'').toLowerCase()}" data-code="${(s.code||'').toLowerCase()}" onclick="openStudentProfile('${s.id}')" style="cursor:pointer;">
+        <div class="student-row" data-name="${esc((s.full_name||'').toLowerCase())}" data-code="${esc((s.code||'').toLowerCase())}" onclick="openStudentProfile('${esc(s.id)}')" style="cursor:pointer;">
           <div class="student-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
           <div class="student-info">
-            <div class="student-name">${s.full_name}</div>
-            <div class="student-meta">${meta}</div>
+            <div class="student-name">${esc(s.full_name)}</div>
+            <div class="student-meta">${esc(meta)}</div>
           </div>
           <div class="progress-wrap">
             <div class="progress-bar"><div class="progress-fill" style="width:${score}%"></div></div>
@@ -639,11 +651,11 @@
       return;
     }
     el.innerHTML = inactive.map(s => `
-      <div class="inactive-row" onclick="openStudentProfile('${s.id}')" style="cursor:pointer;">
+      <div class="inactive-row" onclick="openStudentProfile('${esc(s.id)}')" style="cursor:pointer;">
         <div class="inactive-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
         <div class="inactive-info">
-          <div class="inactive-name">${s.full_name}</div>
-          <div class="inactive-days">${s.days_inactive} dias sem acessar</div>
+          <div class="inactive-name">${esc(s.full_name)}</div>
+          <div class="inactive-days">${Number(s.days_inactive)} dias sem acessar</div>
         </div>
         <button class="notify-btn" onclick="event.stopPropagation()">Lembrar</button>
       </div>`).join('');
@@ -662,10 +674,10 @@
         <div class="exercise-row">
           <div class="ex-rank">${i+1}</div>
           <div class="ex-info">
-            <div class="ex-title">${q}</div>
-            <div class="ex-lesson">${ex.module_title} · ${ex.lesson_title}</div>
+            <div class="ex-title">${esc(q)}</div>
+            <div class="ex-lesson">${esc(ex.module_title)} · ${esc(ex.lesson_title)}</div>
           </div>
-          <div class="ex-rate">${ex.error_pct}% erro</div>
+          <div class="ex-rate">${Number(ex.error_pct)}% erro</div>
         </div>`;
     }).join('');
   }
@@ -817,14 +829,13 @@
       const score       = Number(s.avg_score || 0);
       const done        = Number(s.lessons_completed || 0);
       const meta        = done > 0 ? `${done} lição${done>1?'ões':''} · ${s.total_xp} XP · Desde ${created}` : `Aguardando início · Desde ${created}`;
-      const safeName    = (s.full_name||'').replace(/'/g, "\\'");
 
       return `
-        <div class="student-row" style="flex-wrap:wrap;cursor:pointer;" onclick="openStudentProfile('${s.id}')">
+        <div class="student-row" style="flex-wrap:wrap;cursor:pointer;" onclick="openStudentProfile('${esc(s.id)}')">
           <div class="student-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
           <div class="student-info">
-            <div class="student-name">${s.full_name}</div>
-            <div class="student-meta">${meta}</div>
+            <div class="student-name">${esc(s.full_name)}</div>
+            <div class="student-meta">${esc(meta)}</div>
           </div>
           <div class="progress-wrap">
             <div class="progress-bar"><div class="progress-fill" style="width:${score}%"></div></div>
@@ -832,10 +843,10 @@
           </div>
           <div class="status-pill ${statusClass}">${statusLabel}</div>
           <div class="staff-actions" style="display:flex;gap:6px;margin-left:auto;" onclick="event.stopPropagation()">
-            <button class="notify-btn" onclick="openStudentPassModal('${s.id}','${safeName}')">
+            <button class="notify-btn" data-id="${esc(s.id)}" data-name="${esc(s.full_name)}" onclick="openStudentPassModal(this.dataset.id, this.dataset.name)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Senha
             </button>
-            <button class="notify-btn" style="color:var(--danger,#e74c3c);border-color:var(--danger,#e74c3c);" onclick="openStudentDeleteModal('${s.id}','${safeName}')">
+            <button class="notify-btn" style="color:var(--danger,#e74c3c);border-color:var(--danger,#e74c3c);" data-id="${esc(s.id)}" data-name="${esc(s.full_name)}" onclick="openStudentDeleteModal(this.dataset.id, this.dataset.name)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Excluir
             </button>
           </div>
@@ -870,10 +881,10 @@
       const created   = new Date(s.created_at).toLocaleDateString('pt-BR');
       const actions   = `
         <div class="staff-actions" style="display:flex;gap:6px;margin-left:auto;">
-          <button class="notify-btn" onclick="openPassModal('${s.id}','${tbl}','${s.full_name.replace(/'/g,"\\'")}')">
+          <button class="notify-btn" data-id="${esc(s.id)}" data-tbl="${esc(tbl)}" data-name="${esc(s.full_name)}" onclick="openPassModal(this.dataset.id, this.dataset.tbl, this.dataset.name)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Senha
           </button>
-          ${isSelf(s.id) ? '' : `<button class="notify-btn" style="color:var(--danger,#e74c3c);border-color:var(--danger,#e74c3c);" onclick="openDeleteModal('${s.id}','${tbl}','${s.full_name.replace(/'/g,"\\'")}')">
+          ${isSelf(s.id) ? '' : `<button class="notify-btn" style="color:var(--danger,#e74c3c);border-color:var(--danger,#e74c3c);" data-id="${esc(s.id)}" data-tbl="${esc(tbl)}" data-name="${esc(s.full_name)}" onclick="openDeleteModal(this.dataset.id, this.dataset.tbl, this.dataset.name)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Excluir
           </button>`}
         </div>`;
@@ -881,8 +892,8 @@
         <div class="student-row" style="flex-wrap:wrap;">
           <div class="student-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
           <div class="student-info">
-            <div class="student-name">${s.full_name}</div>
-            <div class="student-meta">${email} · Desde ${created}</div>
+            <div class="student-name">${esc(s.full_name)}</div>
+            <div class="student-meta">${esc(email)} · Desde ${created}</div>
           </div>
           <div class="status-pill ${rolePill}">${roleLabel}</div>
           ${actions}
@@ -1307,8 +1318,8 @@
       const dt = l.completed_at ? new Date(l.completed_at).toLocaleDateString('pt-BR',{day:'numeric',month:'short'}) : '';
       return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border,#f0f0f0);">
         <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:500;color:var(--ink,#1a1a2e);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l.lesson_title}</div>
-          <div style="font-size:11px;color:var(--ink-muted,#888);margin-top:1px;">${l.module_title} · ${l.course_title}</div>
+          <div style="font-size:13px;font-weight:500;color:var(--ink,#1a1a2e);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(l.lesson_title)}</div>
+          <div style="font-size:11px;color:var(--ink-muted,#888);margin-top:1px;">${esc(l.module_title)} · ${esc(l.course_title)}</div>
         </div>
         <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
           ${bar}
@@ -1347,8 +1358,8 @@
           <div class="student-avatar ${avatarColor(d.full_name)}" style="width:56px;height:56px;font-size:20px;">${initials(d.full_name)}</div>
         </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:18px;font-weight:600;color:var(--ink,#1a1a2e);">${d.full_name}</div>
-          <div style="font-size:12px;color:var(--ink-muted,#888);margin-top:2px;">Código: <b>${d.code}</b> · Desde ${joined}</div>
+          <div style="font-size:18px;font-weight:600;color:var(--ink,#1a1a2e);">${esc(d.full_name)}</div>
+          <div style="font-size:12px;color:var(--ink-muted,#888);margin-top:2px;">Código: <b>${esc(d.code)}</b> · Desde ${joined}</div>
           ${lastAct ? `<div style="font-size:11px;color:var(--ink-muted,#888);margin-top:2px;">Último acesso: ${lastAct}</div>` : ''}
         </div>
         <!-- Brasão de rank -->
