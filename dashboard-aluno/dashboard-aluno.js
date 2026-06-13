@@ -1,12 +1,8 @@
 // ── Dashboard do Aluno — English Essential ────────────────────────────────────
 
-// Diagnóstico de erros JS visível na tela
+// Diagnóstico de erros JS (log apenas — overlay removido em produção)
 window.onerror = (msg, src, line, col, err) => {
   if (typeof msg === 'string' && msg.includes('ResizeObserver')) return true;
-  const div = document.createElement('div');
-  div.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px 16px;font:13px monospace;z-index:9999;';
-  div.textContent = `JS ERROR linha ${line}: ${msg}`;
-  document.body.appendChild(div);
   console.error('[ERRO GLOBAL]', msg, 'linha:', line, err);
 };
 
@@ -440,15 +436,15 @@ function renderHome(data) {
 function renderCourse(course) {
   const levelLabel = { basic:'Básico', intermediate:'Intermediário', advanced:'Avançado' }[course.level] || course.level;
   return `<div class="course-section">
-    <div class="course-title">${course.title} <span style="font-size:13px;font-weight:400;color:var(--ink-muted);">· ${levelLabel}</span></div>
+    <div class="course-title">${escapeHtml(course.title)} <span style="font-size:13px;font-weight:400;color:var(--ink-muted);">· ${escapeHtml(levelLabel)}</span></div>
     ${(course.modules||[]).map(renderModule).join('')}
   </div>`;
 }
 
 function renderModule(mod) {
   const lessons = mod.lessons || [], done = lessons.filter(l=>l.completed).length;
-  return `<div class="module-block open" id="mod-${mod.id}">
-    <div class="module-header" onclick="toggleModule('${mod.id}')">
+  return `<div class="module-block open" id="mod-${escapeHtml(mod.id)}">
+    <div class="module-header" data-id="${escapeHtml(mod.id)}" onclick="toggleModule(this.dataset.id)">
       <div class="module-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
@@ -456,14 +452,14 @@ function renderModule(mod) {
         </svg>
       </div>
       <div class="module-meta">
-        <div class="module-name">${mod.title}</div>
+        <div class="module-name">${escapeHtml(mod.title)}</div>
         <div class="module-sub">${done}/${lessons.length} lições concluídas</div>
       </div>
       <div class="module-chevron">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
     </div>
-    <div class="lesson-list" id="lessons-${mod.id}">
+    <div class="lesson-list" id="lessons-${escapeHtml(mod.id)}">
       ${lessons.map((l, i) => renderLesson(l, i, mod)).join('')}
     </div>
   </div>`;
@@ -483,12 +479,12 @@ function renderLesson(lesson, idx, mod) {
     : (isLocked
       ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>');
-  const onclick  = isLocked ? '' : `onclick="openLesson('${lesson.id}','${lesson.title.replace(/'/g,"\\'")}')"`;
+  const onclickAttr = isLocked ? '' : `data-id="${escapeHtml(lesson.id)}" data-title="${escapeHtml(lesson.title)}" onclick="openLesson(this.dataset.id, this.dataset.title)"`;
   const exCount  = lesson.exercise_count || 0;
-  return `<div class="${rowClass}" ${onclick}>
+  return `<div class="${rowClass}" ${onclickAttr}>
     <div class="lesson-status-icon ${iconClass}">${icon}</div>
     <div class="lesson-meta">
-      <div class="lesson-name">${lesson.title}</div>
+      <div class="lesson-name">${escapeHtml(lesson.title)}</div>
       <div class="lesson-info">${exCount} exercício${exCount !== 1 ? 's' : ''}</div>
     </div>
     <div class="lesson-score ${scoreClass}">${scoreLabel}</div>
@@ -1705,7 +1701,7 @@ function showCompletion(score, result = {}) {
   document.getElementById('completionView').innerHTML = `
     <div class="completion-icon">${passed ? '🏆' : '📚'}</div>
     <div class="completion-title">${passed ? 'Lição concluída!' : 'Continue praticando!'}</div>
-    <div class="completion-sub">${currentLesson.title}</div>
+    <div class="completion-sub">${escapeHtml(currentLesson.title)}</div>
     <div class="completion-stats">
       <div class="cstat ${sc >= 70 ? 'gold' : ''}"><div class="cstat-val">${sc}%</div><div class="cstat-lbl">Melhor nota</div></div>
       ${xpTotal > 0 ? `<div class="cstat gold"><div class="cstat-val">+${xpTotal}</div><div class="cstat-lbl">XP ganho</div></div>` : ''}

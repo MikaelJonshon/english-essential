@@ -12,7 +12,8 @@ function doLogout() { localStorage.removeItem('ee_session'); window.location.hre
 // ── Init ────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   try { session = JSON.parse(localStorage.getItem('ee_session')); } catch(e) {}
-  if (!session || session.role !== 'student') { window.location.href = '../index.html'; return; }
+  if (!session || session.role !== 'student' || !session.token) { window.location.href = '../index.html'; return; }
+  if (session.expires_at && new Date(session.expires_at) <= new Date()) { localStorage.removeItem('ee_session'); window.location.href = '../index.html'; return; }
 
   // Sidebar básica enquanto carrega
   renderSidebar(session);
@@ -649,7 +650,7 @@ function renderRankPanel(level) {
 
   // Emblema ativo (pode ser diferente do rank ganho)
   const savedIdx     = parseInt(localStorage.getItem('ee_active_rank') ?? idx);
-  const effectiveActive = (!isNaN(savedIdx) && savedIdx <= idx) ? savedIdx : idx;
+  const effectiveActive = (!isNaN(savedIdx) && savedIdx >= 0 && savedIdx <= idx) ? savedIdx : idx;
   const displayRank  = RANKS[effectiveActive]; // brasão grande mostra o ativo
 
   // Barra de progresso usa o rank real ganho

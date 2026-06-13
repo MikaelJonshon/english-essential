@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://jhpqdxqsgnyqtzqvggvx.supabase.co; connect-src https://jhpqdxqsgnyqtzqvggvx.supabase.co; media-src https://jhpqdxqsgnyqtzqvggvx.supabase.co; frame-src 'none'; object-src 'none';">
 <title>English Essential — Professor</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="dashboard-professor.css">
@@ -722,6 +723,7 @@
     const pass  = document.getElementById('newTeacherPass').value;
     document.getElementById('modalTeacherFeedback').className = 'modal-feedback';
     if (!name || !code || !pass) { showTeacherFeedback('error','Preencha nome, código e senha.'); return; }
+    if (pass.length < 8) { showTeacherFeedback('error','A senha deve ter pelo menos 8 caracteres.'); return; }
     if (!db)          { showTeacherFeedback('error','Erro de conexão. Recarregue a página.'); return; }
     if (!session?.id) { showTeacherFeedback('error','Sessão inválida. Faça login novamente.'); return; }
     if (!['admin','secretaria'].includes(session.role)) { showTeacherFeedback('error','Não autorizado.'); return; }
@@ -934,6 +936,7 @@
   async function saveStaffPassword() {
     const pass = document.getElementById('staffNewPass').value;
     if (!pass) { showPassFeedback('error', 'Digite a nova senha.'); return; }
+    if (pass.length < 8) { showPassFeedback('error', 'A senha deve ter pelo menos 8 caracteres.'); return; }
     document.getElementById('btnSavePass').disabled = true;
     document.getElementById('savePassSpin').style.display = 'block';
     document.getElementById('savePassLabel').textContent = 'Salvando...';
@@ -1031,7 +1034,7 @@
     const pass = document.getElementById('newPass').value;
     document.getElementById('modalFeedback').className = 'modal-feedback';
     if (!name || !code || !pass) { showFeedback('error','Preencha todos os campos.'); return; }
-    if (pass.length < 1) { showFeedback('error','Digite uma senha.'); return; }
+    if (pass.length < 8) { showFeedback('error','A senha deve ter pelo menos 8 caracteres.'); return; }
     if (!db)     { showFeedback('error','Erro de conexão. Recarregue a página.'); return; }
     if (!session?.id)  { showFeedback('error','Sessão inválida. Faça login novamente.'); return; }
     setSaveLoading(true);
