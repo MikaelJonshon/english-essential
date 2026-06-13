@@ -1,0 +1,491 @@
+/* ══════════════════════════════════════════════════════
+   Progresso do Aluno — English Essential
+   ══════════════════════════════════════════════════════ */
+
+/* ── HUD RPG topbar ────────────────────────────────────────── */
+.rpg-hud {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(37,99,235,0.08);
+  border: 1.5px solid rgba(37,99,235,0.22);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 18px rgba(37,99,235,0.1);
+}
+.rpg-hud-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 7px 18px;
+  gap: 1px;
+}
+.rpg-hud-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: rgba(99,155,255,0.6);
+  font-family: 'Nunito', sans-serif;
+}
+.rpg-hud-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: #e2e8f0;
+  font-family: 'Nunito', sans-serif;
+  line-height: 1;
+}
+.rpg-hud-divider {
+  width: 1.5px;
+  height: 28px;
+  background: linear-gradient(180deg, transparent, rgba(37,99,235,0.5), transparent);
+  flex-shrink: 0;
+}
+
+/* Card de rank nas stats */
+.prog-stat-rank {
+  cursor: default;
+  justify-content: center;
+  gap: 4px;
+}
+.prog-stat-rank #statRankBadge svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* ── Painel de Ranking ─────────────────────────────────────── */
+.rank-panel-card { animation: fadeUp .35s ease .15s both; }
+
+.rank-panel {
+  padding: 28px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Rank atual em destaque */
+.rank-current {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.rank-current-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: rankFloat 3s ease-in-out infinite;
+}
+@keyframes rankFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+.rank-current-badge .rank-glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  filter: blur(28px);
+  opacity: .55;
+  z-index: 0;
+  animation: rankPulse 2.5s ease-in-out infinite;
+}
+@keyframes rankPulse {
+  0%, 100% { opacity: .4; transform: scale(.9); }
+  50%       { opacity: .7; transform: scale(1.1); }
+}
+.rank-current-badge svg { position: relative; z-index: 1; }
+.rank-current-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px; font-weight: 900;
+  letter-spacing: .03em;
+}
+.rank-current-level {
+  font-size: 13px; color: var(--white-muted, #94a3b8); font-weight: 500;
+}
+.rank-current-progress {
+  width: 260px; margin: 4px auto 0;
+}
+.rank-progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--white-muted, #94a3b8);
+  margin-bottom: 6px; font-weight: 600;
+}
+.rank-progress-track {
+  height: 8px; border-radius: 100px; overflow: hidden;
+  background: rgba(255,255,255,0.07);
+  position: relative;
+}
+.rank-progress-fill {
+  height: 100%; border-radius: 100px;
+  transition: width .8s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Grid de todos os ranks */
+.rank-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 16px;
+  padding: 0 8px;
+}
+
+.rank-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; text-align: center;
+  padding: 14px 8px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  transition: all .25s;
+  cursor: default;
+  position: relative;
+}
+.rank-item.rank-achieved {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
+}
+.rank-item.rank-current-item {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.18);
+  box-shadow: 0 0 24px rgba(255,255,255,0.06);
+}
+.rank-item.rank-locked {
+  opacity: .3;
+  filter: grayscale(.7);
+}
+
+.rank-item svg { transition: transform .25s; }
+.rank-item.rank-achieved:hover svg,
+.rank-item.rank-current-item svg { transform: scale(1.08); }
+
+.rank-item-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px; font-weight: 800;
+  color: var(--white, #1f2937);
+  letter-spacing: .04em;
+}
+.rank-item-levels {
+  font-size: 10px; color: var(--white-muted, #94a3b8); font-weight: 500;
+}
+.rank-activate-btn {
+  margin-top: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  border: 1.5px solid var(--rank-color, #3b82f6);
+  background: transparent;
+  color: var(--rank-color, #3b82f6);
+  transition: all .18s;
+  white-space: nowrap;
+}
+.rank-activate-btn:hover {
+  background: var(--rank-color, #3b82f6);
+  color: #fff;
+  box-shadow: 0 0 12px var(--rank-color, #3b82f6);
+}
+.rank-activate-active {
+  border-color: rgba(34,197,94,.7);
+  color: #22c55e;
+  cursor: default;
+  opacity: .85;
+}
+
+.rank-item-check {
+  position: absolute; top: 8px; right: 8px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #22c55e; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 8px rgba(34,197,94,.5);
+  font-size: 9px; color: #fff; font-weight: 900;
+}
+
+/* Dark blue overrides para ranking */
+html.dark-blue .rank-item.rank-achieved  { background: rgba(255,255,255,.03) !important; border-color: rgba(255,255,255,.08) !important; }
+html.dark-blue .rank-item.rank-current-item { background: rgba(255,255,255,.06) !important; border-color: rgba(255,255,255,.2) !important; }
+html.dark-blue .rank-current-name  { color: #e2e8f0; }
+html.dark-blue .rank-current-level { color: #475569; }
+html.dark-blue .rank-item-name     { color: #e2e8f0; }
+html.dark-blue .rank-item-levels   { color: #475569; }
+
+/* Stats rápidas */
+.prog-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+  animation: fadeUp .35s ease both;
+}
+
+.prog-stat-card {
+  background: var(--bg-card, #f8fbff);
+  border: 1px solid var(--border, rgba(148,163,184,.28));
+  border-radius: 14px;
+  padding: 20px 18px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; text-align: center;
+  transition: border-color .2s, transform .15s;
+}
+.prog-stat-card:hover { border-color: rgba(37,99,235,.25); transform: translateY(-2px); }
+
+.prog-stat-icon { font-size: 26px; line-height: 1; }
+.prog-stat-val  { font-family: 'Nunito', sans-serif; font-size: 26px; font-weight: 800; color: var(--white, #1f2937); line-height: 1; }
+.prog-stat-lbl  { font-size: 11px; color: var(--white-muted, #94a3b8); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+
+/* Linha 2 */
+.prog-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  animation: fadeUp .35s ease .05s both;
+}
+
+/* Cards */
+.prog-card {
+  background: var(--bg-card, #f8fbff);
+  border: 1px solid var(--border, rgba(148,163,184,.28));
+  border-radius: 14px;
+  overflow: hidden;
+}
+.prog-card--full {
+  margin-bottom: 20px;
+  animation: fadeUp .35s ease .1s both;
+}
+
+.prog-card-header {
+  padding: 16px 22px 12px;
+  border-bottom: 1px solid var(--border, rgba(148,163,184,.28));
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+}
+.prog-card-title { font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; color: var(--white, #1f2937); }
+.prog-card-sub   { font-size: 12px; color: var(--white-muted, #94a3b8); }
+
+/* Radar */
+.prog-radar-wrap {
+  padding: 20px 22px;
+  display: flex; align-items: center; justify-content: center; gap: 28px;
+  flex-wrap: wrap;
+}
+#bigRadar { flex-shrink: 0; }
+
+.prog-radar-legend { display: flex; flex-direction: column; gap: 10px; }
+.radar-leg-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--white, #1f2937);
+}
+.radar-leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.radar-leg-item strong { margin-left: auto; font-family: 'Nunito', sans-serif; font-weight: 700; color: var(--white, #1f2937); }
+
+/* Insights */
+.prog-insights { padding: 16px 22px; display: flex; flex-direction: column; gap: 12px; }
+
+.insight-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px; border-radius: 10px;
+}
+.insight-item--strong { background: rgba(5,150,105,.08); border: 1px solid rgba(5,150,105,.2); }
+.insight-item--weak   { background: rgba(239,68,68,.06);  border: 1px solid rgba(239,68,68,.2); }
+.insight-item--ok     { background: rgba(37,99,235,.07);  border: 1px solid rgba(37,99,235,.15); }
+
+.insight-icon { font-size: 20px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+.insight-body { flex: 1; }
+.insight-title { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: var(--white, #1f2937); margin-bottom: 2px; }
+.insight-desc  { font-size: 12px; color: var(--white-muted, #94a3b8); line-height: 1.4; }
+
+.insight-bar-wrap { margin-top: 6px; }
+.insight-bar-track { height: 5px; background: rgba(0,0,0,.07); border-radius: 100px; overflow: hidden; }
+.insight-bar-fill  { height: 100%; border-radius: 100px; transition: width .6s ease; }
+.insight-bar-fill--strong { background: linear-gradient(90deg, #059669, #34d399); }
+.insight-bar-fill--weak   { background: linear-gradient(90deg, #ef4444, #f87171); }
+.insight-bar-fill--ok     { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+.insight-score { font-size: 11px; color: var(--white-muted, #94a3b8); margin-top: 3px; text-align: right; }
+
+/* Gráfico XP */
+.prog-chart-wrap { padding: 20px 22px; height: 200px; position: relative; }
+
+/* Lições */
+.prog-lessons-list { padding: 8px 0; }
+.prog-lesson-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 22px; border-bottom: 1px solid var(--border, rgba(148,163,184,.18));
+  transition: background .15s;
+}
+.prog-lesson-row:last-child { border-bottom: none; }
+.prog-lesson-row:hover { background: rgba(37,99,235,.04); }
+.prog-lesson-module { font-size: 11px; color: var(--white-muted, #94a3b8); flex-shrink: 0; min-width: 120px; }
+.prog-lesson-title  { font-size: 13px; color: var(--white, #1f2937); font-weight: 500; flex: 1; }
+.prog-lesson-score  {
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px; flex-shrink: 0;
+}
+.prog-lesson-score--pass { color: #16a34a; background: rgba(22,163,74,.1); }
+.prog-lesson-score--fail { color: #dc2626; background: rgba(220,38,38,.08); }
+
+/* Estado vazio */
+.prog-empty {
+  text-align: center; padding: 40px 20px;
+  color: var(--white-muted, #94a3b8); font-size: 14px;
+}
+.prog-empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+/* Animação */
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══════════════════════════════════════════════════════
+   GLASSMORPHISM — Página de Progresso
+   ══════════════════════════════════════════════════════ */
+
+html.dark-blue .prog-stats-row .prog-stat-card,
+html.dark-blue .prog-card {
+  background: rgba(10,18,50,.55) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(99,155,255,.14) !important;
+}
+html.dark-blue .prog-stat-card {
+  border-radius: 16px !important;
+  transition: border-color .2s, transform .15s, box-shadow .2s !important;
+}
+html.dark-blue .prog-stat-card:hover {
+  border-color: rgba(99,155,255,.35) !important;
+  box-shadow: 0 8px 28px rgba(37,99,235,.15) !important;
+  transform: translateY(-3px) !important;
+}
+html.dark-blue .prog-stat-val {
+  background: linear-gradient(135deg, #93c5fd, #67e8f9) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+html.dark-blue .prog-stat-lbl  { color: #475569 !important; }
+html.dark-blue .prog-card-header { border-color: rgba(99,155,255,.1) !important; }
+html.dark-blue .prog-card-title  { color: #e2e8f0 !important; }
+html.dark-blue .prog-card-sub    { color: #475569 !important; }
+html.dark-blue .prog-lesson-title { color: #cbd5e1 !important; }
+html.dark-blue .prog-lesson-module { color: #475569 !important; }
+html.dark-blue .radar-leg-item    { color: #e2e8f0 !important; }
+html.dark-blue .radar-leg-item strong { color: #93c5fd !important; }
+html.dark-blue .insight-title     { color: #e2e8f0 !important; }
+html.dark-blue .insight-desc      { color: #64748b !important; }
+html.dark-blue .insight-item--strong { background: rgba(5,150,105,.12) !important; border-color: rgba(5,150,105,.3) !important; }
+html.dark-blue .insight-item--weak   { background: rgba(239,68,68,.10) !important; border-color: rgba(239,68,68,.3) !important; }
+html.dark-blue .insight-item--ok     { background: rgba(59,130,246,.10) !important; border-color: rgba(59,130,246,.25) !important; }
+html.dark-blue .insight-bar-track    { background: rgba(255,255,255,.07) !important; }
+html.dark-blue .prog-lesson-row      { border-color: rgba(99,155,255,.08) !important; }
+html.dark-blue .prog-lesson-row:hover { background: rgba(99,155,255,.06) !important; }
+html.dark-blue .prog-empty { color: #475569 !important; }
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVO MOBILE
+   ══════════════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  /* Stats 4 colunas → 2×2 */
+  .prog-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  /* Linha 2 (radar + insights) → empilhada */
+  .prog-row-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  /* Radar menor e centralizado */
+  .prog-radar-wrap {
+    padding: 16px;
+    flex-direction: column;
+    gap: 16px;
+  }
+  #bigRadar { width: 100%; max-width: 280px; height: auto; }
+
+  .prog-radar-legend {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 16px;
+  }
+
+  /* Rank grid 7 → 4 colunas */
+  .rank-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 0;
+  }
+  .rank-item { padding: 10px 4px; border-radius: 10px; }
+  .rank-item svg { width: 32px !important; height: 32px !important; }
+  .rank-item-name { font-size: 10px; }
+  .rank-item-levels { font-size: 9px; }
+  .rank-activate-btn { font-size: 9px; padding: 3px 6px; }
+
+  /* Rank current menor */
+  .rank-current-progress { width: 100%; }
+  .rank-current-name { font-size: 18px; }
+
+  /* Card de ranking */
+  .rank-panel { padding: 16px 14px 20px; gap: 20px; }
+
+  /* Lições — esconde coluna de módulo no mobile */
+  .prog-lesson-module { display: none; }
+  .prog-lesson-row { padding: 10px 16px; gap: 10px; }
+
+  /* HUD topbar compacto (herdado do dashboard-aluno.css) */
+  .xp-pill { padding: 5px 12px; font-size: 12px; }
+
+  /* Cards */
+  .prog-card-header { padding: 14px 16px 10px; }
+  .prog-card-title { font-size: 14px; }
+  .prog-insights { padding: 12px 14px; }
+
+  /* Stat card */
+  .prog-stat-card { padding: 14px 10px; }
+  .prog-stat-val { font-size: 22px; }
+  .prog-stat-icon { font-size: 22px; }
+  .prog-stat-lbl { font-size: 10px; }
+
+  /* XP chart menor */
+  .prog-chart-wrap { height: 160px; padding: 14px 14px; }
+}
+
+@media (max-width: 480px) {
+  /* Stats 2 colunas menores */
+  .prog-stats-row { gap: 8px; }
+  .prog-stat-card { padding: 12px 8px; border-radius: 12px; }
+  .prog-stat-val { font-size: 20px; }
+
+  /* Rank grid 7 → 3 colunas com scroll horizontal se precisar */
+  .rank-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .rank-item { padding: 8px 4px; }
+  .rank-item svg { width: 26px !important; height: 26px !important; }
+  .rank-item-name { font-size: 9px; }
+  .rank-item-levels { display: none; }
+
+  /* Oculta botão activate no mobile pequeno (não cabe bem) */
+  .rank-activate-btn { display: none; }
+
+  .rank-panel { padding: 12px 10px 16px; gap: 16px; }
+  .rank-current-name { font-size: 16px; }
+
+  /* Insights menores */
+  .insight-item { padding: 10px; }
+  .insight-icon { font-size: 16px; }
+  .insight-title { font-size: 12px; }
+  .insight-desc { font-size: 11px; }
+}
+
+/* dark-blue mobile overrides */
+html.dark-blue .mobile-menu-btn {
+  border-color: rgba(59,130,246,0.2) !important;
+  color: #94a3b8 !important;
+}
+html.dark-blue .sidebar-overlay {
+  background: rgba(3, 8, 26, 0.65) !important;
+}

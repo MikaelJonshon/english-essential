@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Essential — Meu Aprendizado</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dashboard-aluno.css">
+
+<!-- Tema Dark Blue + Fullscreen — deve ficar inline para aplicar antes do render -->
+<script>
+  window._speechSupported = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  (function() {
+    try {
+      const cfg = JSON.parse(localStorage.getItem('ee_settings') || '{}');
+      if (cfg.darkBlue) {
+        document.documentElement.classList.add('dark-blue');
+      }
+    } catch(e) {}
+    if (localStorage.getItem('ee_fullscreen') === '1') {
+      window.addEventListener('DOMContentLoaded', () => {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }, { once: true });
+    }
+  })();
+</script>
+</head>
+<body>
+<div class="layout">
+
+  <!-- Overlay mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Perfil do aluno -->
+    <div class="sidebar-footer" style="border-top:none;padding-top:16px;padding-bottom:0;">
+      <div class="user-pill">
+        <div class="avatar" id="sidebarAvatar">?</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarName">—</div>
+          <div class="user-role-label">Aluno</div>
+        </div>
+        <div class="logout-btn" onclick="doLogout()" title="Sair">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- XP + Level + Streak -->
+    <div class="sidebar-xp">
+      <div class="level-row">
+        <span class="level-badge" id="sidebarLevel">Nível 1</span>
+        <span class="xp-to-next" id="sidebarXpNext">0 / 1000 XP</span>
+      </div>
+      <div class="xp-bar-track">
+        <div class="xp-bar-fill" id="sidebarXpBar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Radar de habilidades -->
+    <div class="sidebar-radar">
+      <div class="radar-title">Minhas Habilidades</div>
+      <canvas id="skillRadar" width="220" height="190"></canvas>
+    </div>
+
+    <!-- Navegação -->
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Aprendizado</div>
+      <a class="nav-item active" onclick="showHome()" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Início
+      </a>
+      <a class="nav-item" href="../progresso/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Meu progresso
+      </a>
+      <div class="nav-section-label">Sistema</div>
+      <a class="nav-item" href="#" onclick="openSettings(); return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Configurações
+      </a>
+    </nav>
+
+    <!-- Logo -->
+    <div class="sidebar-footer" style="margin-top:auto;">
+      <a class="brand-logo" href="#">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">English <span>Essential</span></div>
+          <div class="brand-role">Painel do aluno</div>
+        </div>
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- Conteúdo principal -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div>
+          <h1 id="topbarTitle">Meu aprendizado</h1>
+          <p id="topbarSub">Carregando...</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <!-- HUD RPG -->
+        <div class="rpg-hud" id="rpgHud">
+          <div class="rpg-hud-item">
+            <div id="topbarRankBadge" style="display:flex;align-items:center;line-height:1;"></div>
+          </div>
+          <div class="rpg-hud-divider"></div>
+          <div class="rpg-hud-item">
+            <span class="rpg-hud-label">NÍVEL</span>
+            <span class="rpg-hud-val" id="hudLevelVal">—</span>
+          </div>
+          <div class="rpg-hud-divider"></div>
+          <div class="rpg-hud-item">
+            <span class="rpg-hud-label">MOEDAS</span>
+            <span class="rpg-hud-val" id="sidebarCoins">0</span>
+          </div>
+          <div class="rpg-hud-divider"></div>
+          <div class="rpg-hud-item">
+            <span class="rpg-hud-label">XP</span>
+            <span class="rpg-hud-val" id="topbarXpVal">—</span>
+          </div>
+        </div>
+        <button id="btnFullscreen" onclick="toggleFullscreen()" title="Tela cheia" style="background:none;border:1.5px solid var(--border,#e5e7eb);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-muted,#888);transition:all .15s;flex-shrink:0;">
+          <svg id="fsIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Home -->
+      <div id="homeView">
+        <div class="loading-center">
+          <div class="dot-loader"><span></span><span></span><span></span></div>
+          <div>Carregando seu curso...</div>
+        </div>
+      </div>
+
+      <!-- Exercícios -->
+      <div id="exerciseView">
+        <div class="ex-topbar">
+          <button class="btn-back" onclick="showHome()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Voltar
+          </button>
+          <div class="ex-progress-wrap">
+            <div class="ex-progress-label" id="exProgressLabel">Exercício 0 de 0</div>
+            <div class="ex-progress-track"><div class="ex-progress-fill" id="exProgressFill" style="width:0%"></div></div>
+          </div>
+          <div class="ex-counter" id="exCounter">0/0</div>
+        </div>
+        <div class="ex-card" id="exCard"></div>
+      </div>
+
+      <!-- Conclusão -->
+      <div id="completionView"></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- XP popup -->
+<div class="xp-badge-popup" id="xpPopup"></div>
+
+<!-- ══ MODAL DE CONFIGURAÇÕES ══════════════════════════════════ -->
+<div class="cfg-backdrop" id="cfgBackdrop" onclick="cfgBackdropClick(event)">
+  <div class="cfg-modal" role="dialog" aria-modal="true" aria-label="Configurações">
+
+    <!-- Header -->
+    <div class="cfg-modal-header">
+      <div>
+        <h2>Configurações</h2>
+        <p>Preferências de áudio, microfone e exibição</p>
+      </div>
+      <button class="cfg-modal-close" onclick="closeSettings()" title="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Corpo -->
+    <div class="cfg-modal-body">
+      <div class="settings-grid">
+
+        <!-- ── ÁUDIO ── -->
+        <div class="setting-card">
+          <div class="setting-card-header">
+            <div class="setting-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            </div>
+            <div>
+              <div class="setting-card-title">Áudio</div>
+              <div class="setting-card-sub">Volume e sons do sistema</div>
+            </div>
+          </div>
+          <div class="setting-card-body">
+            <div class="setting-row">
+              <div><div class="setting-label">Som geral</div><div class="setting-desc">Ativa ou desativa todos os sons</div></div>
+              <label class="cfg-toggle toggle-wrap"><input type="checkbox" id="cfgToggleSound" checked onchange="cfgOnChange()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Volume geral</div><div class="setting-desc">Controla o volume de todos os áudios</div></div>
+              <div class="slider-wrap">
+                <input type="range" class="cfg-range" id="cfgVolumeGeral" min="0" max="100" value="80" oninput="cfgUpdateSlider('cfgVolumeGeral','cfgVolGeralVal'); cfgOnChange()">
+                <span class="slider-val" id="cfgVolGeralVal">80%</span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Sons de feedback</div><div class="setting-desc">Sons ao acertar ou errar exercícios</div></div>
+              <label class="cfg-toggle toggle-wrap"><input type="checkbox" id="cfgToggleFeedback" checked onchange="cfgOnChange()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Narração / voz</div><div class="setting-desc">Reprodução de áudio nas lições de listening</div></div>
+              <label class="cfg-toggle toggle-wrap"><input type="checkbox" id="cfgToggleNarration" checked onchange="cfgOnChange()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Volume da narração</div></div>
+              <div class="slider-wrap">
+                <input type="range" class="cfg-range" id="cfgVolumeNarration" min="0" max="100" value="90" oninput="cfgUpdateSlider('cfgVolumeNarration','cfgVolNarVal'); cfgOnChange()">
+                <span class="slider-val" id="cfgVolNarVal">90%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── MICROFONE ── -->
+        <div class="setting-card">
+          <div class="setting-card-header">
+            <div class="setting-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </div>
+            <div>
+              <div class="setting-card-title">Microfone</div>
+              <div class="setting-card-sub">Entrada de áudio e detecção de voz</div>
+            </div>
+          </div>
+          <div class="setting-card-body">
+            <div class="setting-row">
+              <div><div class="setting-label">Microfone ativo</div><div class="setting-desc">Habilitar uso do microfone na plataforma</div></div>
+              <label class="cfg-toggle toggle-wrap"><input type="checkbox" id="cfgToggleMic" onchange="cfgOnMicToggle()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Dispositivo de entrada</div><div class="setting-desc">Selecione o microfone a ser usado</div></div>
+              <select class="setting-select" id="cfgMicSelect" onchange="cfgOnMicDeviceChange()" disabled>
+                <option value="">Ative o microfone primeiro</option>
+              </select>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Nível de entrada</div><div class="setting-desc">Volume captado em tempo real</div></div>
+              <div style="display:flex;align-items:center;gap:10px;flex:1;max-width:220px;">
+                <div class="vu-meter"><div class="vu-fill" id="cfgVuFill"></div></div>
+                <span class="mic-status waiting" id="cfgMicStatus">Inativo</span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Sensibilidade</div><div class="setting-desc">Limiar mínimo de detecção de voz</div></div>
+              <div class="slider-wrap">
+                <input type="range" class="cfg-range" id="cfgMicSensitivity" min="0" max="100" value="50" oninput="cfgUpdateSlider('cfgMicSensitivity','cfgMicSensVal'); cfgOnChange()">
+                <span class="slider-val" id="cfgMicSensVal">50%</span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Testar microfone</div><div class="setting-desc">Verifique se o áudio está sendo captado</div></div>
+              <button class="btn-setting" id="cfgBtnTestMic" onclick="cfgTestMic()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                Testar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TELA ── -->
+        <div class="setting-card">
+          <div class="setting-card-header">
+            <div class="setting-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <div>
+              <div class="setting-card-title">Tela</div>
+              <div class="setting-card-sub">Exibição e resolução</div>
+            </div>
+          </div>
+          <div class="setting-card-body">
+            <div class="setting-row">
+              <div><div class="setting-label">Tela cheia</div><div class="setting-desc">Expandir para ocupar toda a tela</div></div>
+              <button class="btn-setting" id="cfgBtnFullscreen" onclick="toggleFullscreen()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                <span id="cfgFullscreenLabel">Ativar</span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Zoom da interface</div><div class="setting-desc">Ajuste o tamanho do conteúdo na tela</div></div>
+              <div class="zoom-options" id="cfgZoomOptions">
+                <button class="zoom-btn" onclick="cfgSetZoom(90)">90%</button>
+                <button class="zoom-btn active" onclick="cfgSetZoom(100)">100%</button>
+                <button class="zoom-btn" onclick="cfgSetZoom(110)">110%</button>
+                <button class="zoom-btn" onclick="cfgSetZoom(125)">125%</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Resolução detectada</div><div class="setting-desc">Tamanho atual da janela do navegador</div></div>
+              <span style="font-size:13px;font-weight:500;color:var(--ink-muted,#888);" id="cfgResolutionLabel">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── GERAL ── -->
+        <div class="setting-card">
+          <div class="setting-card-header">
+            <div class="setting-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+            </div>
+            <div>
+              <div class="setting-card-title">Geral</div>
+              <div class="setting-card-sub">Preferências do sistema</div>
+            </div>
+          </div>
+          <div class="setting-card-body">
+            <div class="setting-row">
+              <div><div class="setting-label">Tema Dark Blue</div><div class="setting-desc">Interface escura em tons de azul profundo</div></div>
+              <label class="cfg-toggle toggle-wrap"><input type="checkbox" id="cfgToggleDarkBlue" onchange="cfgOnChange()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Animações</div><div class="setting-desc">Efeitos de transição e animações visuais</div></div>
+              <label class="cfg-toggle toggle-wrap"><input type="checkbox" id="cfgToggleAnimations" checked onchange="cfgOnChange()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Notificações do navegador</div><div class="setting-desc">Alertas de inatividade e lembretes</div></div>
+              <button class="btn-setting" id="cfgBtnNotif" onclick="cfgRequestNotifications()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span id="cfgNotifLabel">Solicitar permissão</span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Versão da plataforma</div></div>
+              <span style="font-size:12px;color:var(--ink-muted,#888);">v1.0.0</span>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Redefinir configurações</div><div class="setting-desc">Restaura todas as preferências ao padrão</div></div>
+              <button class="btn-setting" onclick="cfgReset()" style="color:#ef4444;border-color:rgba(239,68,68,.3);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.53"/></svg>
+                Redefinir
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /settings-grid -->
+    </div><!-- /cfg-modal-body -->
+
+    <!-- Save bar — rodapé fixo do modal -->
+    <div class="cfg-save-bar" id="cfgSaveBar">
+      <p>Você tem alterações não salvas</p>
+      <div class="cfg-save-bar-actions">
+        <button class="btn-cfg-discard" onclick="cfgDiscard()">Descartar</button>
+        <button class="btn-cfg-save" onclick="cfgSave()">Salvar</button>
+      </div>
+    </div>
+
+  </div><!-- /cfg-modal -->
+</div><!-- /cfg-backdrop -->
+
+<!-- Toast de configurações -->
+<div class="cfg-toast" id="cfgToast"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="dashboard-aluno.js"></script>
+</body>
+</html>

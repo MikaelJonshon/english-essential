@@ -1,0 +1,410 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #f0f6ff;
+  --bg-card:      #ffffff;
+  --bg-input:     #ffffff;
+  --blue:         #2563eb;
+  --blue-light:   #3b82f6;
+  --blue-glow:    rgba(37,99,235,0.22);
+  --blue-dark:    #1d4ed8;
+  --cyan:         #60a5fa;
+  --cyan-glow:    rgba(96,165,250,0.25);
+  --white:        #1f2937;
+  --white-soft:   #475569;
+  --white-muted:  #94a3b8;
+  --border:       rgba(148,163,184,0.35);
+  --danger:       #f87171;
+  --danger-bg:    rgba(248,113,113,0.10);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  overflow-x: hidden;
+}
+
+/* ── Página: fundo + login centralizado ── */
+.page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 45%, #e0f2fe 100%);
+}
+
+/* Camadas decorativas de fundo */
+.page-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-pattern {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 55% 50% at 15% 20%, rgba(59,130,246,0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 45% at 85% 75%, rgba(59,130,246,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 35% 35% at 70% 15%, rgba(37,99,235,0.10) 0%, transparent 60%);
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(148,163,184,0.2) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.5;
+}
+
+.bg-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(90vw, 720px);
+  height: min(90vw, 720px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(59,130,246,0.12);
+  box-shadow: 0 0 120px rgba(59,130,246,0.06) inset;
+}
+.bg-circle::after {
+  content: '';
+  position: absolute;
+  inset: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(59,130,246,0.10);
+}
+
+.floating-letters { position: absolute; inset: 0; }
+.fl {
+  position: absolute;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  color: rgba(37,99,235,0.06);
+  line-height: 1;
+  user-select: none;
+}
+.fl-1 { font-size: min(28vw, 280px); top: 5%; left: 3%; }
+.fl-2 { font-size: min(20vw, 200px); bottom: 15%; right: 5%; }
+.fl-3 { font-size: min(14vw, 140px); top: 40%; right: 18%; }
+
+/* Marca e slogan no fundo */
+.bg-brand {
+  position: absolute;
+  top: 32px;
+  left: 40px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bg-slogan {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  z-index: 1;
+  max-width: 380px;
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px var(--blue-glow);
+  color: #fff;
+}
+.brand-icon svg { width: 20px; height: 20px; }
+
+.brand-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: 0.01em;
+}
+.brand-name span {
+  background: linear-gradient(90deg, var(--blue-light), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slogan-tagline {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.25;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 14px;
+}
+.slogan-tagline em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--blue-light), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slogan-sub {
+  font-size: 14px;
+  color: var(--white-soft);
+  line-height: 1.65;
+  font-weight: 300;
+}
+
+.slogan-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+.pill {
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid rgba(96,165,250,0.3);
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(6px);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--blue-light);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Login centralizado ── */
+.login-center {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 420px;
+  flex-shrink: 0;
+}
+
+.form-card {
+  width: 100%;
+  padding: 40px 36px 36px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow:
+    0 4px 6px rgba(15,23,42,0.04),
+    0 24px 48px rgba(37,99,235,0.12),
+    0 0 0 1px rgba(148,163,184,0.08);
+}
+
+.form-header { margin-bottom: 28px; text-align: center; }
+.form-header h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.form-header p {
+  font-size: 14px;
+  color: var(--white-soft);
+  font-weight: 300;
+}
+
+/* Campos */
+.field { margin-bottom: 18px; }
+.field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue-light);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.input-wrap { position: relative; }
+.input-wrap .input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--white-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  height: 50px;
+  padding: 0 16px 0 44px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-input);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-wrap--password input {
+  padding-right: 52px;
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder { color: var(--white-muted); font-weight: 300; }
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+
+.field-password { margin-bottom: 24px; }
+
+.toggle-pass {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--white-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s;
+}
+.toggle-pass:hover { color: var(--blue-light); background: rgba(59,130,246,0.08); }
+.toggle-pass:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.toggle-pass svg {
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+.toggle-pass .icon-eye-off { display: none; }
+.toggle-pass.is-visible .icon-eye { display: none; }
+.toggle-pass.is-visible .icon-eye-off { display: block; }
+
+.btn-login {
+  width: 100%;
+  height: 52px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, var(--blue) 0%, #1d4ed8 100%);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px var(--blue-glow);
+  letter-spacing: 0.02em;
+}
+.btn-login::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(59,130,246,0.45); }
+.btn-login:hover::before { opacity: 1; }
+.btn-login:active { transform: translateY(0); }
+
+.btn-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.error-msg {
+  display: none;
+  background: var(--danger-bg);
+  border: 1px solid rgba(248,113,113,0.25);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--danger);
+  margin-bottom: 20px;
+  align-items: center;
+  gap: 8px;
+}
+.error-msg svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.spinner {
+  display: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.form-card { animation: fadeUp 0.45s ease both; }
+.bg-slogan { animation: fadeUp 0.55s ease 0.08s both; }
+
+/* ── Responsivo ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .bg-slogan { display: none; }
+  .bg-brand {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+  .page { padding: 20px; align-items: center; min-height: 100dvh; }
+  .login-center { max-width: 480px; margin: 0 auto; }
+}
+
+@media (max-width: 540px) {
+  .page { padding: 16px; }
+  .form-card { padding: 28px 20px 24px; border-radius: 16px; }
+  .form-header { margin-bottom: 20px; }
+  .form-header h1 { font-size: 22px; }
+  input[type="text"],
+  input[type="password"] { height: 46px; font-size: 14px; }
+  .btn-login { height: 48px; font-size: 15px; border-radius: 12px; }
+  .fl-1 { font-size: min(52vw, 220px); }
+  .fl-2 { font-size: min(36vw, 160px); }
+  .fl-3 { display: none; }
+  .brand-name { font-size: 16px; }
+  .brand-icon { width: 34px; height: 34px; border-radius: 10px; }
+  .brand-icon svg { width: 17px; height: 17px; }
+}
+
+@media (max-width: 380px) {
+  .page { paddin

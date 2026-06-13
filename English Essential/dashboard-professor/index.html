@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Essential — Professor</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dashboard-professor.css">
+<!-- Dark Blue Theme + Fullscreen — inline para evitar flash -->
+<script>
+  (function() {
+    try {
+      const cfg = JSON.parse(localStorage.getItem('ee_settings') || '{}');
+      if (cfg.darkBlue) {
+        const r = document.documentElement;
+        r.style.setProperty('--bg',          '#0a0f1e');
+        r.style.setProperty('--bg-card',     '#0f1729');
+        r.style.setProperty('--bg-card2',    '#131d35');
+        r.style.setProperty('--bg-input',    '#131d35');
+        r.style.setProperty('--white',       '#e2e8f0');
+        r.style.setProperty('--white-soft',  '#cbd5e1');
+        r.style.setProperty('--white-muted', '#64748b');
+        r.style.setProperty('--border',      'rgba(59,130,246,0.15)');
+        r.classList.add('dark-blue');
+      }
+    } catch(e) {}
+    if (localStorage.getItem('ee_fullscreen') === '1') {
+      window.addEventListener('DOMContentLoaded', () => {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }, { once: true });
+    }
+  })();
+</script>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <a class="brand-logo" href="#">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">English <span>Essential</span></div>
+          <div class="brand-role">Painel do professor</div>
+        </div>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <a class="nav-item active" href="#" onclick="showView('overview', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Visão geral
+      </a>
+      <a class="nav-item" href="#" onclick="showView('students', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Alunos
+      </a>
+      <a class="nav-item" id="navUsers" href="#" onclick="showView('users', this)" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        Usuários
+      </a>
+      <div class="nav-section-label">Sistema</div>
+      <a class="nav-item" href="#" style="opacity:.45;pointer-events:none;cursor:default;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Configurações
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="avatar">PD</div>
+        <div class="user-info">
+          <div class="user-name">Prof. Demo</div>
+          <div class="user-role-label">Professor</div>
+        </div>
+        <div class="logout-btn" onclick="doLogout()" title="Sair">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>Visão geral</h1>
+        <p>Segunda-feira, 2 de junho de 2026</p>
+      </div>
+      <div class="topbar-right">
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Buscar aluno..." oninput="filterStudents(this.value)" />
+        </div>
+        <button class="btn-new-student" onclick="openModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo aluno
+        </button>
+        <button class="btn-new-student" id="btnNewTeacher" onclick="openModalTeacher()" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo professor
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content" id="viewOverview">
+
+      <!-- Métricas -->
+      <div class="metrics">
+        <div class="metric-card gold">
+          <div class="metric-label">Total de alunos</div>
+          <div class="metric-value" id="metricTotal">—</div>
+          <div class="metric-sub">ativos na plataforma</div>
+        </div>
+        <div class="metric-card warn">
+          <div class="metric-label">Taxa média de acerto</div>
+          <div class="metric-value" id="metricScore">—</div>
+          <div class="metric-sub">em lições nos últimos 7 dias</div>
+        </div>
+        <div class="metric-card danger">
+          <div class="metric-label">Inativos (+14 dias)</div>
+          <div class="metric-value" id="metricInactive">—</div>
+          <div class="metric-sub">sem acessar há mais de 14 dias</div>
+        </div>
+      </div>
+
+      <!-- Lista de alunos + Inativos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Alunos</span>
+            <a class="card-action" href="#" onclick="event.preventDefault();showView('students', document.querySelector('.nav-item[onclick*=students]'))">Ver todos</a>
+          </div>
+          <div class="student-list" id="studentList">
+            <div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando alunos...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Alunos inativos</span>
+            <a class="card-action" href="#" onclick="event.preventDefault();showView('students', document.querySelector('.nav-item[onclick*=students]'))">Ver todos</a>
+          </div>
+          <div class="card-body" id="inactiveList">
+            <div style="padding:20px 22px;font-size:13px;color:var(--ink-muted);">Carregando dados...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- View: Alunos (admin + teacher) -->
+    <div class="content" id="viewStudents" style="display:none;">
+      <div class="card" style="margin:0;">
+        <div class="card-header" style="flex-wrap:wrap;gap:10px;">
+          <span class="card-title">Todos os alunos</span>
+          <button class="btn-new-student" onclick="openModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo aluno
+          </button>
+        </div>
+
+        <!-- Filtros -->
+        <div style="padding:12px 22px 4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <div class="search-bar" style="flex:1;min-width:180px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="studentViewSearch" placeholder="Buscar por nome ou código..." oninput="applyStudentFilters()" />
+          </div>
+          <select id="studentViewStatus" onchange="applyStudentFilters()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border,#e0e0e0);font-size:13px;font-family:inherit;background:var(--bg-card,#fff);color:var(--ink,#1a1a2e);cursor:pointer;">
+            <option value="all">Todos os status</option>
+            <option value="active">Ativos</option>
+            <option value="inactive">Inativos</option>
+          </select>
+          <select id="studentViewSort" onchange="applyStudentFilters()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border,#e0e0e0);font-size:13px;font-family:inherit;background:var(--bg-card,#fff);color:var(--ink,#1a1a2e);cursor:pointer;">
+            <option value="name">Nome A–Z</option>
+            <option value="name_desc">Nome Z–A</option>
+            <option value="newest">Mais recentes</option>
+            <option value="oldest">Mais antigos</option>
+          </select>
+        </div>
+
+        <div style="padding:4px 22px 12px;">
+          <span id="studentViewCount" style="font-size:12px;color:var(--ink-muted,#888);"></span>
+        </div>
+
+        <div class="student-list" id="studentViewList" style="max-height:520px;overflow-y:auto;">
+          <div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando alunos...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View: Usuários (admin only) -->
+    <div class="content" id="viewUsers" style="display:none;">
+      <div class="card" style="margin:0;">
+        <div class="card-header">
+          <span class="card-title">Professores e Administradores</span>
+          <button class="btn-new-student" id="btnNewTeacherUsers" onclick="openModalTeacher()" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo professor
+          </button>
+        </div>
+        <div id="staffList" style="padding:8px 0;">
+          <div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando usuários...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal: Novo Aluno -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Novo aluno</h2>
+        <p>Preencha os dados para criar o acesso.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-feedback" id="modalFeedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="feedbackIcon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="feedbackText"></span>
+    </div>
+
+    <div class="modal-field">
+      <label>Nome completo</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <input type="text" id="newName" placeholder="Ex: João da Silva" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Código de acesso</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <input type="text" id="newCode" placeholder="Ex: joao.silva" autocomplete="off" />
+      </div>
+      <div class="field-hint">4 a 50 caracteres. Letras, números, ponto e hífen. Será o login do aluno.</div>
+    </div>
+
+    <div class="modal-field">
+      <label>Senha</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <input type="password" id="newPass" placeholder="Digite a senha" autocomplete="new-password" />
+        <button class="toggle-pass-modal" onclick="toggleModalPass()" type="button">
+          <svg id="modalEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" id="btnSave" onclick="saveStudent()">
+        <div class="spin" id="saveSpin"></div>
+        <span id="saveLabel">Criar aluno</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Novo Professor -->
+<div class="modal-overlay" id="modalTeacherOverlay" onclick="handleTeacherOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Novo professor</h2>
+        <p>Preencha os dados para criar o acesso.</p>
+      </div>
+      <button class="modal-close" onclick="closeModalTeacher()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-feedback" id="modalTeacherFeedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="feedbackTeacherIcon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="feedbackTeacherText"></span>
+    </div>
+
+    <div class="modal-field">
+      <label>Nome completo</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <input type="text" id="newTeacherName" placeholder="Ex: Maria Oliveira" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Código de acesso</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <input type="text" id="newTeacherCode" placeholder="Ex: maria.oliveira" autocomplete="off" />
+      </div>
+      <div class="field-hint">4 a 50 caracteres. Letras, números, ponto e hífen. Será o login do professor.</div>
+    </div>
+
+    <div class="modal-field">
+      <label>E-mail <span style="color:var(--ink-muted);font-weight:400;">(opcional)</span></label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
+        <input type="email" id="newTeacherEmail" placeholder="Ex: maria@escola.com" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Telefone <span style="color:var(--ink-muted);font-weight:400;">(opcional)</span></label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <input type="tel" id="newTeacherPhone" placeholder="Ex: (11) 99999-0000" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Senha</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <input type="password" id="newTeacherPass" placeholder="Digite a senha" autocomplete="new-password" />
+        <button class="toggle-pass-modal" onclick="toggleTeacherPass()" type="button">
+          <svg id="teacherEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModalTeacher()">Cancelar</button>
+      <button class="btn-save" id="btnSaveTeacher" onclick="saveTeacher()">
+        <div class="spin" id="saveTeacherSpin"></div>
+        <span id="saveTeacherLabel">Criar professor</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Alterar Senha -->
+<div class="modal-overlay" id="modalPassOverlay" onclick="if(event.target===this)closePassModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Alterar senha</h2>
+        <p id="passModalSubtitle">Definir nova senha para o usuário.</p>
+      </div>
+      <button class="modal-close" onclick="closePassModal()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-feedback" id="passFeedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="passFeedbackIcon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="passFeedbackText"></span>
+    </div>
+    <div class="modal-field">
+      <label>Nova senha</label>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <input type="password" id="staffNewPass" placeholder="Digite a nova senha" autocomplete="new-password" />
+        <button class="toggle-pass-modal" onclick="toggleStaffPass()" type="button">
+          <svg id="staffEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePassModal()">Cancelar</button>
+      <button class="btn-save" id="btnSavePass" onclick="saveStaffPassword()">
+        <div class="spin" id="savePassSpin"></div>
+        <span id="savePassLabel">Salvar senha</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar Exclusão -->
+<div class="modal-overlay" id="modalDeleteOverlay" onclick="if(event.target===this)closeDeleteModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Confirmar exclusão</h2>
+        <p id="deleteModalSubtitle">Tem certeza que deseja remover este usuário?</p>
+      </div>
+      <button class="modal-close" onclick="closeDeleteModal()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-feedback" id="deleteFeedback">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="deleteFeedbackIcon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="deleteFeedbackText"></span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+      <button class="btn-save" id="btnConfirmDelete" onclick="confirmDeleteStaff()" style="background:var(--danger,#e74c3c);">
+        <div class="spin" id="deleteConfirmSpin"></div>
+        <span id="deleteConfirmLabel">Sim, remover</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  // ── Modal — independente do Supabase ──
+  function openModal() {
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalFeedback').className = 'modal-feedback';
+    ['newName','newCode','newPass'].forEach(id => document.getElementById(id).value = '');
+    setTimeout(() => document.getElementById('newName').focus(), 100);
+  }
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+  function handleOverlayClick(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  function toggleModalPass() {
+    const input = document.getElementById('newPass'), icon = document.getElementById('modalEyeIcon');
+    const show  = input.type === 'password';
+    input.type  = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? '<line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+  function showFeedback(type, msg) {
+    document.getElementById('feedbackText').textContent = msg;
+    document.getElementById('feedbackIcon').innerHTML = type === 'success'
+      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+      : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+    document.getElementById('modalFeedback').className = 'modal-feedback ' + type;
+  }
+  function setSaveLoading(on) {
+    document.getElementById('btnSave').disabled       = on;
+    document.getElementById('saveSpin').style.display = on ? 'block' : 'none';
+    document.getElementById('saveLabel').textContent  = on ? 'Criando...' : 'Criar aluno';
+  }
+
+  // ── Supabase ──
+  const SUPABASE_URL  = 'https://jhpqdxqsgnyqtzqvggvx.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpocHFkeHFzZ255cXR6cXZnZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTEyMjksImV4cCI6MjA5NTY2NzIyOX0.xGC_jijXKpRAdhuyyTMQxS8qkca0Dap_Wcs3_8xKvcw';
+  let db = null;
+  try { db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); } catch(e) { console.warn('Supabase não carregou:', e); }
+
+  const COLORS = ['av-blue','av-green','av-purple','av-orange','av-pink','av-teal'];
+  const avatarColor = n => COLORS[(n||'').charCodeAt(0) % COLORS.length];
+  const initials    = n => (n||'??').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+  let session = null, allStudents = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    try { session = JSON.parse(localStorage.getItem('ee_session')); } catch(e) {}
+    if (!session || !['teacher','admin'].includes(session.role)) {
+      window.location.href = '../index.html'; return;
+    }
+    document.querySelector('.avatar').textContent          = initials(session.full_name);
+    document.querySelector('.user-name').textContent       = session.full_name || '—';
+    document.querySelector('.user-role-label').textContent = session.role === 'admin' ? 'Administrador' : 'Professor';
+    if (session.role === 'admin') {
+      document.querySelector('.brand-role').textContent = 'Painel do administrador';
+      document.getElementById('btnNewTeacher').style.display = '';
+      document.getElementById('navUsers').style.display = '';
+      document.getElementById('btnNewTeacherUsers').style.display = '';
+    }
+    document.querySelector('.topbar-left p').textContent   =
+      new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    await Promise.all([loadMetrics(), loadStudents()]);
+  });
+
+  async function loadMetrics() {
+    const { data } = await db.rpc('get_teacher_metrics', { p_caller_id: session.id });
+    if (!data) return;
+    document.getElementById('metricTotal').textContent    = data.total_students;
+    document.getElementById('metricActive').textContent   = data.active_today;
+    document.getElementById('metricScore').textContent    = data.avg_score + '%';
+    document.getElementById('metricInactive').textContent = data.inactive_count;
+  }
+
+  async function loadStudents() {
+    const { data, error } = await db.rpc('get_all_students_for_teacher', { p_caller_id: session.id });
+    if (error || !data) {
+      document.getElementById('studentList').innerHTML =
+        '<div style="padding:24px;text-align:center;color:var(--danger);font-size:13px;">Erro ao carregar alunos.</div>';
+      return;
+    }
+    allStudents = data;
+    renderStudents(allStudents);
+    renderInactiveStudents(allStudents);
+  }
+
+  function renderStudents(list) {
+    const el = document.getElementById('studentList');
+    if (!list.length) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Nenhum aluno cadastrado ainda.</div>';
+      return;
+    }
+    el.innerHTML = list.map(s => {
+      const done  = Number(s.lessons_completed || 0);
+      const score = Number(s.avg_score || 0);
+      const isNew = !s.last_activity;
+      const isInactive = s.days_inactive !== null && s.days_inactive > 14;
+      const sc   = isNew ? 'sp-new' : (isInactive ? 'sp-inactive' : 'sp-active');
+      const sl   = isNew ? 'Novo'   : (isInactive ? 'Inativo'     : 'Ativo');
+      const meta = done > 0 ? `${done} lição${done>1?'ões':''} · ${s.total_xp} XP` : 'Aguardando início';
+      return `
+        <div class="student-row" data-name="${(s.full_name||'').toLowerCase()}" data-code="${(s.code||'').toLowerCase()}">
+          <div class="student-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
+          <div class="student-info">
+            <div class="student-name">${s.full_name}</div>
+            <div class="student-meta">${meta}</div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" style="width:${score}%"></div></div>
+            <div class="progress-pct">${score}%</div>
+          </div>
+          <div class="status-pill ${sc}">${sl}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderInactiveStudents(list) {
+    const el = document.getElementById('inactiveList');
+    const inactive = list.filter(s => s.days_inactive !== null && s.days_inactive > 14)
+                         .sort((a,b) => b.days_inactive - a.days_inactive);
+    if (!inactive.length) {
+      el.innerHTML = '<div style="padding:20px 22px;font-size:13px;color:var(--ink-muted);">Nenhum aluno inativo no momento. 🎉</div>';
+      return;
+    }
+    el.innerHTML = inactive.map(s => `
+      <div class="inactive-row">
+        <div class="inactive-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
+        <div class="inactive-info">
+          <div class="inactive-name">${s.full_name}</div>
+          <div class="inactive-days">${s.days_inactive} dias sem acessar</div>
+        </div>
+        <button class="notify-btn">Lembrar</button>
+      </div>`).join('');
+  }
+
+  async function loadErrorExercises() {
+    const { data } = await db.rpc('get_error_rate_exercises', { p_caller_id: session.id });
+    const el = document.getElementById('errorExercises');
+    if (!data || !data.length) {
+      el.innerHTML = '<div style="padding:20px 22px;font-size:13px;color:var(--ink-muted);">Ainda não há dados de exercícios.</div>';
+      return;
+    }
+    el.innerHTML = data.map((ex, i) => {
+      const q = ex.question.length > 48 ? ex.question.slice(0,48)+'…' : ex.question;
+      return `
+        <div class="exercise-row">
+          <div class="ex-rank">${i+1}</div>
+          <div class="ex-info">
+            <div class="ex-title">${q}</div>
+            <div class="ex-lesson">${ex.module_title} · ${ex.lesson_title}</div>
+          </div>
+          <div class="ex-rate">${ex.error_pct}% erro</div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Modal Professor ──
+  function openModalTeacher() {
+    document.getElementById('modalTeacherOverlay').classList.add('open');
+    document.getElementById('modalTeacherFeedback').className = 'modal-feedback';
+    ['newTeacherName','newTeacherCode','newTeacherEmail','newTeacherPhone','newTeacherPass']
+      .forEach(id => document.getElementById(id).value = '');
+    setTimeout(() => document.getElementById('newTeacherName').focus(), 100);
+  }
+  function closeModalTeacher() { document.getElementById('modalTeacherOverlay').classList.remove('open'); }
+  function handleTeacherOverlayClick(e) { if (e.target === document.getElementById('modalTeacherOverlay')) closeModalTeacher(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalTeacher(); });
+
+  function toggleTeacherPass() {
+    const input = document.getElementById('newTeacherPass'), icon = document.getElementById('teacherEyeIcon');
+    const show  = input.type === 'password';
+    input.type  = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? '<line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+  function showTeacherFeedback(type, msg) {
+    document.getElementById('feedbackTeacherText').textContent = msg;
+    document.getElementById('feedbackTeacherIcon').innerHTML = type === 'success'
+      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+      : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+    document.getElementById('modalTeacherFeedback').className = 'modal-feedback ' + type;
+  }
+  function setTeacherSaveLoading(on) {
+    document.getElementById('btnSaveTeacher').disabled          = on;
+    document.getElementById('saveTeacherSpin').style.display   = on ? 'block' : 'none';
+    document.getElementById('saveTeacherLabel').textContent     = on ? 'Criando...' : 'Criar professor';
+  }
+  async function saveTeacher() {
+    const name  = document.getElementById('newTeacherName').value.trim();
+    const code  = document.getElementById('newTeacherCode').value.trim();
+    const email = document.getElementById('newTeacherEmail').value.trim();
+    const phone = document.getElementById('newTeacherPhone').value.trim();
+    const pass  = document.getElementById('newTeacherPass').value;
+    document.getElementById('modalTeacherFeedback').className = 'modal-feedback';
+    if (!name || !code || !pass) { showTeacherFeedback('error','Preencha nome, código e senha.'); return; }
+    if (!db)          { showTeacherFeedback('error','Erro de conexão. Recarregue a página.'); return; }
+    if (!session?.id) { showTeacherFeedback('error','Sessão inválida. Faça login novamente.'); return; }
+    if (session.role !== 'admin') { showTeacherFeedback('error','Somente administradores podem criar professores.'); return; }
+    setTeacherSaveLoading(true);
+    try {
+      const { error } = await db.rpc('create_teacher', {
+        p_caller_id: session.id,
+        p_code: code,
+        p_full_name: name,
+        p_password: pass,
+        p_email: email || null,
+        p_phone: phone || null
+      });
+      if (error) throw error;
+      showTeacherFeedback('success', `Professor "${name}" criado com sucesso!`);
+      setTimeout(closeModalTeacher, 1600);
+    } catch (err) {
+      showTeacherFeedback('error', err.message || 'Erro ao criar professor.');
+    } finally { setTeacherSaveLoading(false); }
+  }
+  function filterStudents(q) {
+    q = q.toLowerCase();
+    renderStudents(allStudents.filter(s =>
+      (s.full_name||'').toLowerCase().includes(q) || (s.code||'').toLowerCase().includes(q)
+    ));
+  }
+
+  // ── Navegação entre views ──
+  function showView(view, navEl) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (navEl) navEl.classList.add('active');
+
+    const views = {
+      overview: document.getElementById('viewOverview'),
+      students: document.getElementById('viewStudents'),
+      users:    document.getElementById('viewUsers')
+    };
+
+    // Esconde todas
+    Object.values(views).forEach(v => { if (v) v.style.display = 'none'; });
+
+    const titles = { overview: 'Visão geral', students: 'Alunos', users: 'Usuários' };
+    document.querySelector('.topbar-left h1').textContent = titles[view] || 'Visão geral';
+
+    if (views[view]) views[view].style.display = '';
+
+    if (view === 'users') loadStaff();
+    if (view === 'students') loadStudentView();
+  }
+
+  // ── View Alunos: carregamento e filtros ──
+  let allStudentsView = [];
+
+  async function loadStudentView() {
+    const el = document.getElementById('studentViewList');
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando alunos...</div>';
+    try {
+      const { data, error } = await db.rpc('get_all_students_for_teacher', { p_caller_id: session.id });
+      if (error) throw error;
+      allStudentsView = data || [];
+      applyStudentFilters();
+    } catch(err) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--danger);font-size:13px;">Erro ao carregar alunos.</div>';
+    }
+  }
+
+  function applyStudentFilters() {
+    const q      = (document.getElementById('studentViewSearch').value || '').toLowerCase();
+    const status = document.getElementById('studentViewStatus').value;
+    const sort   = document.getElementById('studentViewSort').value;
+
+    let list = allStudentsView.filter(s => {
+      const matchQ = !q || (s.full_name||'').toLowerCase().includes(q) || (s.code||'').toLowerCase().includes(q);
+      const isInactive = s.days_inactive !== null && s.days_inactive > 14;
+      const sStatus = s.status === 'inactive' ? 'inactive' : (isInactive ? 'inactive' : 'active');
+      const matchStatus = status === 'all' || sStatus === status;
+      return matchQ && matchStatus;
+    });
+
+    list.sort((a, b) => {
+      if (sort === 'name')      return (a.full_name||'').localeCompare(b.full_name||'');
+      if (sort === 'name_desc') return (b.full_name||'').localeCompare(a.full_name||'');
+      if (sort === 'newest')    return new Date(b.created_at) - new Date(a.created_at);
+      if (sort === 'oldest')    return new Date(a.created_at) - new Date(b.created_at);
+      return 0;
+    });
+
+    document.getElementById('studentViewCount').textContent = `${list.length} aluno${list.length !== 1 ? 's' : ''} encontrado${list.length !== 1 ? 's' : ''}`;
+    renderStudentView(list);
+  }
+
+  function renderStudentView(list) {
+    const el = document.getElementById('studentViewList');
+    if (!list.length) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Nenhum aluno encontrado.</div>';
+      return;
+    }
+    el.innerHTML = list.map(s => {
+      const isInactive = (s.status === 'inactive') || (s.days_inactive !== null && s.days_inactive > 14);
+      const statusLabel = isInactive ? 'Inativo' : (!s.last_activity ? 'Novo' : 'Ativo');
+      const statusClass = isInactive ? 'sp-inactive' : (!s.last_activity ? 'sp-new' : 'sp-active');
+      const created     = new Date(s.created_at).toLocaleDateString('pt-BR');
+      const score       = Number(s.avg_score || 0);
+      const done        = Number(s.lessons_completed || 0);
+      const meta        = done > 0 ? `${done} lição${done>1?'ões':''} · ${s.total_xp} XP · Desde ${created}` : `Aguardando início · Desde ${created}`;
+      const safeName    = (s.full_name||'').replace(/'/g, "\\'");
+
+      return `
+        <div class="student-row" style="flex-wrap:wrap;">
+          <div class="student-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
+          <div class="student-info">
+            <div class="student-name">${s.full_name}</div>
+            <div class="student-meta">${meta}</div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" style="width:${score}%"></div></div>
+            <div class="progress-pct">${score}%</div>
+          </div>
+          <div class="status-pill ${statusClass}">${statusLabel}</div>
+          <div class="staff-actions" style="display:flex;gap:6px;margin-left:auto;">
+            <button class="notify-btn" onclick="openStudentPassModal('${s.id}','${safeName}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Senha
+            </button>
+            <button class="notify-btn" style="color:var(--danger,#e74c3c);border-color:var(--danger,#e74c3c);" onclick="openStudentDeleteModal('${s.id}','${safeName}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Excluir
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function loadStaff() {
+    const el = document.getElementById('staffList');
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando usuários...</div>';
+    try {
+      const { data, error } = await db.rpc('get_all_staff', { p_caller_id: session.id });
+      if (error) throw error;
+      renderStaff(data || []);
+    } catch(err) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--danger);font-size:13px;">Erro ao carregar usuários.</div>';
+    }
+  }
+
+  function renderStaff(list) {
+    const el = document.getElementById('staffList');
+    if (!list.length) {
+      el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Nenhum usuário encontrado.</div>';
+      return;
+    }
+    const isSelf = id => id === session.id;
+    el.innerHTML = list.map(s => {
+      const roleLabel = s.role === 'admin' ? 'Administrador' : 'Professor';
+      const rolePill  = s.role === 'admin' ? 'sp-active' : 'sp-new';
+      const tbl       = s.role === 'admin' ? 'users' : 'teachers';
+      const email     = s.email || '—';
+      const created   = new Date(s.created_at).toLocaleDateString('pt-BR');
+      const actions   = `
+        <div class="staff-actions" style="display:flex;gap:6px;margin-left:auto;">
+          <button class="notify-btn" onclick="openPassModal('${s.id}','${tbl}','${s.full_name.replace(/'/g,"\\'")}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Senha
+          </button>
+          ${isSelf(s.id) ? '' : `<button class="notify-btn" style="color:var(--danger,#e74c3c);border-color:var(--danger,#e74c3c);" onclick="openDeleteModal('${s.id}','${tbl}','${s.full_name.replace(/'/g,"\\'")}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Excluir
+          </button>`}
+        </div>`;
+      return `
+        <div class="student-row" style="flex-wrap:wrap;">
+          <div class="student-avatar ${avatarColor(s.full_name)}">${initials(s.full_name)}</div>
+          <div class="student-info">
+            <div class="student-name">${s.full_name}</div>
+            <div class="student-meta">${email} · Desde ${created}</div>
+          </div>
+          <div class="status-pill ${rolePill}">${roleLabel}</div>
+          ${actions}
+        </div>`;
+    }).join('');
+  }
+
+  // ── Modal: Alterar Senha de Staff ──
+  let passTarget = { id: null, table: null, name: '' };
+
+  function openPassModal(id, table, name) {
+    passTarget = { id, table, name };
+    document.getElementById('passModalSubtitle').textContent = `Definir nova senha para ${name}.`;
+    document.getElementById('staffNewPass').value = '';
+    document.getElementById('passFeedback').className = 'modal-feedback';
+    document.getElementById('modalPassOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('staffNewPass').focus(), 100);
+  }
+  function closePassModal() { document.getElementById('modalPassOverlay').classList.remove('open'); }
+
+  function toggleStaffPass() {
+    const input = document.getElementById('staffNewPass'), icon = document.getElementById('staffEyeIcon');
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? '<line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+
+  function showPassFeedback(type, msg) {
+    document.getElementById('passFeedbackText').textContent = msg;
+    document.getElementById('passFeedbackIcon').innerHTML = type === 'success'
+      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+      : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+    document.getElementById('passFeedback').className = 'modal-feedback ' + type;
+  }
+
+  async function saveStaffPassword() {
+    const pass = document.getElementById('staffNewPass').value;
+    if (!pass) { showPassFeedback('error', 'Digite a nova senha.'); return; }
+    document.getElementById('btnSavePass').disabled = true;
+    document.getElementById('savePassSpin').style.display = 'block';
+    document.getElementById('savePassLabel').textContent = 'Salvando...';
+    try {
+      const { error } = await db.rpc('update_staff_password', {
+        p_caller_id: session.id,
+        p_target_id: passTarget.id,
+        p_target_table: passTarget.table,
+        p_new_password: pass
+      });
+      if (error) throw error;
+      showPassFeedback('success', `Senha de "${passTarget.name}" alterada!`);
+      setTimeout(closePassModal, 1400);
+    } catch(err) {
+      showPassFeedback('error', err.message || 'Erro ao alterar senha.');
+    } finally {
+      document.getElementById('btnSavePass').disabled = false;
+      document.getElementById('savePassSpin').style.display = 'none';
+      document.getElementById('savePassLabel').textContent = 'Salvar senha';
+    }
+  }
+
+  // ── Modal: Confirmar Exclusão ──
+  let deleteTarget = { id: null, table: null, name: '' };
+
+  function openDeleteModal(id, table, name) {
+    deleteTarget = { id, table, name };
+    document.getElementById('deleteModalSubtitle').textContent = `Tem certeza que deseja remover "${name}"? Esta ação desativará o acesso.`;
+    document.getElementById('deleteFeedback').className = 'modal-feedback';
+    document.getElementById('modalDeleteOverlay').classList.add('open');
+  }
+  function closeDeleteModal() { document.getElementById('modalDeleteOverlay').classList.remove('open'); }
+
+  function showDeleteFeedback(type, msg) {
+    document.getElementById('deleteFeedbackText').textContent = msg;
+    document.getElementById('deleteFeedbackIcon').innerHTML = type === 'success'
+      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+      : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+    document.getElementById('deleteFeedback').className = 'modal-feedback ' + type;
+  }
+
+  async function confirmDeleteStaff() {
+    document.getElementById('btnConfirmDelete').disabled = true;
+    document.getElementById('deleteConfirmSpin').style.display = 'block';
+    document.getElementById('deleteConfirmLabel').textContent = 'Removendo...';
+    try {
+      const { error } = await db.rpc('delete_staff', {
+        p_caller_id: session.id,
+        p_target_id: deleteTarget.id,
+        p_target_table: deleteTarget.table
+      });
+      if (error) throw error;
+      showDeleteFeedback('success', `"${deleteTarget.name}" foi removido.`);
+      setTimeout(() => {
+        closeDeleteModal();
+        if (deleteTarget.table === 'student') { loadStudentView(); loadStudents(); loadMetrics(); }
+        else loadStaff();
+      }, 1200);
+    } catch(err) {
+      showDeleteFeedback('error', err.message || 'Erro ao remover usuário.');
+    } finally {
+      document.getElementById('btnConfirmDelete').disabled = false;
+      document.getElementById('deleteConfirmSpin').style.display = 'none';
+      document.getElementById('deleteConfirmLabel').textContent = 'Sim, remover';
+    }
+  }
+
+  // ── Modal: Senha de Aluno (reutiliza modal de senha) ──
+  function openStudentPassModal(id, name) {
+    openPassModal(id, 'student', name);
+  }
+
+  // ── Modal: Excluir Aluno (reutiliza modal de exclusão) ──
+  function openStudentDeleteModal(id, name) {
+    openDeleteModal(id, 'student', name);
+  }
+
+  function doLogout() { localStorage.removeItem('ee_session'); window.location.href = '../index.html'; }
+
+  async function saveStudent() {
+    const name = document.getElementById('newName').value.trim();
+    const code = document.getElementById('newCode').value.trim();
+    const pass = document.getElementById('newPass').value;
+    document.getElementById('modalFeedback').className = 'modal-feedback';
+    if (!name || !code || !pass) { showFeedback('error','Preencha todos os campos.'); return; }
+    if (pass.length < 1) { showFeedback('error','Digite uma senha.'); return; }
+    if (!db)     { showFeedback('error','Erro de conexão. Recarregue a página.'); return; }
+    if (!session?.id)  { showFeedback('error','Sessão inválida. Faça login novamente.'); return; }
+    setSaveLoading(true);
+    try {
+      const { error } = await db.rpc('create_student',
+        { p_caller_id: session.id, p_code: code, p_full_name: name, p_password: pass });
+      if (error) throw error;
+      showFeedback('success', `Aluno "${name}" criado com sucesso!`);
+      await Promise.all([loadStudents(), loadMetrics()]);
+      setTimeout(closeModal, 1600);
+    } catch (err) {
+      showFeedback('error', err.message || 'Erro ao criar aluno.');
+    } finally { setSaveLoading(false); }
+  }
+</script>
+
+</body>
+</html>
