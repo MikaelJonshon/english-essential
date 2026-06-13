@@ -1248,14 +1248,50 @@
   }
 
   // ── Modal: Perfil do Aluno ──
-  const RANK_CONFIG = {
-    'Iniciante': { min: 0,    max: 199,  next: 200,  color: '#8e8e93', bg: 'rgba(142,142,147,0.12)', label: 'Iniciante' },
-    'Bronze':    { min: 200,  max: 499,  next: 500,  color: '#cd7f32', bg: 'rgba(205,127,50,0.12)',  label: 'Bronze'    },
-    'Prata':     { min: 500,  max: 999,  next: 1000, color: '#a0a0b0', bg: 'rgba(160,160,176,0.12)', label: 'Prata'     },
-    'Ouro':      { min: 1000, max: 2499, next: 2500, color: '#f5c542', bg: 'rgba(245,197,66,0.12)',  label: 'Ouro'      },
-    'Platina':   { min: 2500, max: 4999, next: 5000, color: '#40c8e0', bg: 'rgba(64,200,224,0.12)',  label: 'Platina'   },
-    'Diamante':  { min: 5000, max: 9999, next: 5000, color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', label: 'Diamante'  },
-  };
+  const PROF_RANKS = [
+    {
+      name: 'Bronze', minLv: 1, maxLv: 10,
+      color: '#cd7f32', glow: 'rgba(205,127,50,.6)',
+      svg: (size=64) => `<svg width="${size}" height="${size}" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pr-bz-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7c4a1a"/><stop offset="40%" stop-color="#cd7f32"/><stop offset="70%" stop-color="#f0a84e"/><stop offset="100%" stop-color="#7c4a1a"/></linearGradient><linearGradient id="pr-bz-sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,200,100,.25)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></linearGradient></defs><path d="M60 4 L108 24 L108 72 Q108 108 60 136 Q12 108 12 72 L12 24 Z" fill="url(#pr-bz-g)" stroke="rgba(255,180,60,.3)" stroke-width="1.5"/><path d="M60 14 L98 30 L98 72 Q98 100 60 124 Q22 100 22 72 L22 30 Z" fill="url(#pr-bz-sh)"/><circle cx="60" cy="70" r="24" fill="none" stroke="rgba(255,180,60,.35)" stroke-width="2"/><text x="60" y="77" text-anchor="middle" font-family="serif" font-size="28" font-weight="900" fill="rgba(255,200,100,.9)">B</text><ellipse cx="60" cy="22" rx="20" ry="5" fill="rgba(255,200,100,.15)"/></svg>`
+    },
+    {
+      name: 'Prata', minLv: 10, maxLv: 20,
+      color: '#b0b8c8', glow: 'rgba(176,184,200,.6)',
+      svg: (size=64) => `<svg width="${size}" height="${size}" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pr-sv-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6b7280"/><stop offset="35%" stop-color="#b0b8c8"/><stop offset="60%" stop-color="#e2e8f0"/><stop offset="100%" stop-color="#6b7280"/></linearGradient></defs><path d="M60 4 L108 24 L108 72 Q108 108 60 136 Q12 108 12 72 L12 24 Z" fill="url(#pr-sv-g)" stroke="rgba(220,230,240,.3)" stroke-width="1.5"/><path d="M60 18 L96 34 L96 72 Q96 102 60 126 Q24 102 24 72 L24 34 Z" fill="rgba(255,255,255,.08)"/><circle cx="60" cy="70" r="22" fill="none" stroke="rgba(220,235,255,.4)" stroke-width="1.5"/><circle cx="60" cy="70" r="16" fill="none" stroke="rgba(220,235,255,.2)" stroke-width="1"/><text x="60" y="77" text-anchor="middle" font-family="serif" font-size="26" font-weight="900" fill="rgba(230,240,255,.9)">S</text></svg>`
+    },
+    {
+      name: 'Ouro', minLv: 20, maxLv: 30,
+      color: '#fbbf24', glow: 'rgba(251,191,36,.65)',
+      svg: (size=64) => `<svg width="${size}" height="${size}" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pr-go-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#b45309"/><stop offset="40%" stop-color="#f59e0b"/><stop offset="65%" stop-color="#fde68a"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M60 4 L108 24 L108 72 Q108 108 60 136 Q12 108 12 72 L12 24 Z" fill="url(#pr-go-g)" stroke="rgba(253,230,138,.35)" stroke-width="1.5"/><path d="M60 18 L96 34 L96 72 Q96 102 60 126 Q24 102 24 72 L24 34 Z" fill="rgba(255,255,255,.1)"/><polygon points="60,44 63.5,55 75,55 65.5,62 69,73 60,66 51,73 54.5,62 45,55 56.5,55" fill="rgba(255,240,100,.9)" stroke="rgba(180,83,9,.3)" stroke-width=".5"/><circle cx="60" cy="90" r="8" fill="none" stroke="rgba(253,230,138,.4)" stroke-width="1.5"/><text x="60" y="94" text-anchor="middle" font-family="serif" font-size="9" font-weight="900" fill="rgba(253,230,138,.8)">G</text></svg>`
+    },
+    {
+      name: 'Platina', minLv: 30, maxLv: 40,
+      color: '#67e8f9', glow: 'rgba(103,232,249,.6)',
+      svg: (size=64) => `<svg width="${size}" height="${size}" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pr-pt-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0e7490"/><stop offset="40%" stop-color="#22d3ee"/><stop offset="65%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#0e7490"/></linearGradient></defs><path d="M60 4 L108 24 L108 72 Q108 108 60 136 Q12 108 12 72 L12 24 Z" fill="url(#pr-pt-g)" stroke="rgba(165,243,252,.3)" stroke-width="1.5"/><path d="M60 18 L96 34 L96 72 Q96 102 60 126 Q24 102 24 72 L24 34 Z" fill="rgba(255,255,255,.1)"/><polygon points="60,50 65,63 79,63 68,72 72,85 60,76 48,85 52,72 41,63 55,63" fill="rgba(165,243,252,.85)" stroke="rgba(14,116,144,.4)" stroke-width=".5"/></svg>`
+    },
+    {
+      name: 'Diamante', minLv: 40, maxLv: 50,
+      color: '#818cf8', glow: 'rgba(129,140,248,.65)',
+      svg: (size=64) => `<svg width="${size}" height="${size}" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pr-dm-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3730a3"/><stop offset="35%" stop-color="#6366f1"/><stop offset="60%" stop-color="#c7d2fe"/><stop offset="100%" stop-color="#3730a3"/></linearGradient></defs><path d="M60 4 L108 24 L108 72 Q108 108 60 136 Q12 108 12 72 L12 24 Z" fill="url(#pr-dm-g)" stroke="rgba(199,210,254,.3)" stroke-width="1.5"/><path d="M60 18 L96 34 L96 72 Q96 102 60 126 Q24 102 24 72 L24 34 Z" fill="rgba(255,255,255,.08)"/><polygon points="60,42 76,58 60,98 44,58" fill="rgba(199,210,254,.8)" stroke="rgba(55,48,163,.3)" stroke-width=".5"/><polygon points="60,42 76,58 60,70 44,58" fill="rgba(255,255,255,.35)"/></svg>`
+    },
+    {
+      name: 'Mestre', minLv: 50, maxLv: 80,
+      color: '#c084fc', glow: 'rgba(192,132,252,.7)',
+      svg: (size=64) => `<svg width="${size}" height="${size}" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pr-ms-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6b21a8"/><stop offset="35%" stop-color="#a855f7"/><stop offset="60%" stop-color="#e9d5ff"/><stop offset="100%" stop-color="#6b21a8"/></linearGradient></defs><path d="M60 4 L108 24 L108 72 Q108 108 60 136 Q12 108 12 72 L12 24 Z" fill="url(#pr-ms-g)" stroke="rgba(233,213,255,.3)" stroke-width="1.5"/><path d="M60 18 L96 34 L96 72 Q96 102 60 126 Q24 102 24 72 L24 34 Z" fill="rgba(255,255,255,.08)"/><path d="M38 75 L38 58 L48 68 L60 48 L72 68 L82 58 L82 75 Z" fill="rgba(233,213,255,.85)" stroke="rgba(107,33,168,.4)" stroke-width=".8" stroke-linejoin="round"/><rect x="36" y="75" width="48" height="8" rx="2" fill="rgba(233,213,255,.7)"/></svg>`
+    },
+    {
+      name: 'Grão-Mestre', minLv: 80, maxLv: 999,
+      color: '#f87171', glow: 'rgba(248,113,113,.75)',
+      svg: (size=64) => `<svg width="${size}" height="${size}" viewBox="0 0 120 145" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pr-gm-body" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6b0f0f"/><stop offset="30%" stop-color="#dc2626"/><stop offset="60%" stop-color="#f87171"/><stop offset="100%" stop-color="#7f1d1d"/></linearGradient><linearGradient id="pr-gm-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#92400e"/><stop offset="50%" stop-color="#fde68a"/><stop offset="100%" stop-color="#92400e"/></linearGradient></defs><path d="M60 5 L114 28 L114 78 Q114 118 60 144 Q6 118 6 78 L6 28 Z" fill="url(#pr-gm-gold)" stroke="#fde68a" stroke-width=".5"/><path d="M60 12 L108 32 L108 78 Q108 112 60 136 Q12 112 12 78 L12 32 Z" fill="url(#pr-gm-body)"/><path d="M34 82 L34 62 L44 74 L60 50 L76 74 L86 62 L86 82 Z" fill="url(#pr-gm-gold)" stroke="#92400e" stroke-width=".8" stroke-linejoin="round"/><rect x="32" y="82" width="56" height="12" rx="2.5" fill="url(#pr-gm-gold)" stroke="#92400e" stroke-width=".8"/></svg>`
+    },
+  ];
+
+  function profGetRankInfo(level) {
+    for (let i = PROF_RANKS.length - 1; i >= 0; i--) {
+      if (level >= PROF_RANKS[i].minLv) return { rank: PROF_RANKS[i], idx: i };
+    }
+    return { rank: PROF_RANKS[0], idx: 0 };
+  }
 
   const TYPE_LABELS = {
     'multiple_choice': 'Múltipla escolha',
@@ -1266,18 +1302,6 @@
     'image_choice':    'Imagem',
     'word_order':      'Ordem de palavras',
   };
-
-  function rankSVG(rank, color) {
-    const shields = {
-      'Iniciante': `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.18"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><text x="24" y="33" text-anchor="middle" font-size="16" fill="${color}" font-weight="700" font-family="DM Sans,sans-serif">I</text></svg>`,
-      'Bronze':    `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.18"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><text x="24" y="33" text-anchor="middle" font-size="14" fill="${color}" font-weight="700" font-family="DM Sans,sans-serif">B</text></svg>`,
-      'Prata':     `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.22"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><text x="24" y="33" text-anchor="middle" font-size="14" fill="${color}" font-weight="700" font-family="DM Sans,sans-serif">P</text></svg>`,
-      'Ouro':      `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.22"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><path d="M18 22l4 4 8-8" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24" cy="34" r="2.5" fill="${color}"/></svg>`,
-      'Platina':   `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.18"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><polygon points="24,16 27,23 35,23 29,28 31,35 24,30 17,35 19,28 13,23 21,23" fill="${color}" opacity="0.85"/></svg>`,
-      'Diamante':  `<svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;"><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" fill="${color}" opacity="0.18"/><path d="M24 4L4 12V28C4 40 14 50 24 52C34 50 44 40 44 28V12L24 4Z" stroke="${color}" stroke-width="2.5" fill="none"/><polygon points="24,14 32,22 24,38 16,22" fill="${color}" opacity="0.7"/><polygon points="24,14 32,22 24,26 16,22" fill="${color}"/></svg>`,
-    };
-    return shields[rank] || shields['Iniciante'];
-  }
 
   async function openStudentProfile(studentId) {
     const overlay = document.getElementById('profileModalOverlay');
@@ -1303,8 +1327,6 @@
   }
 
   function renderStudentProfileModal(d) {
-    const rank   = d.rank || 'Iniciante';
-    const cfg    = RANK_CONFIG[rank] || RANK_CONFIG['Iniciante'];
     const xp     = d.total_xp || 0;
     const streak = d.streak_days || 0;
     const acc    = d.accuracy_pct || 0;
@@ -1313,10 +1335,11 @@
     const correct= d.correct_answers || 0;
     const wrong  = d.wrong_answers || 0;
 
-    // XP progress bar
-    const xpInLevel   = xp - cfg.min;
-    const xpNeeded    = cfg.next - cfg.min;
-    const xpPct       = rank === 'Diamante' ? 100 : Math.min(100, Math.round(xpInLevel / xpNeeded * 100));
+    // Level-based rank (same as progresso page)
+    const level      = Math.floor(xp / 1000) + 1;
+    const { rank: rankObj } = profGetRankInfo(level);
+    const xpInLevel  = xp % 1000;
+    const xpPct      = Math.min(100, Math.round(xpInLevel / 1000 * 100));
 
     // Joined date
     const joined = d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' }) : '—';
@@ -1375,20 +1398,21 @@
           ${lastAct ? `<div style="font-size:11px;color:var(--ink-muted,#888);margin-top:2px;">Último acesso: ${lastAct}</div>` : ''}
         </div>
         <!-- Brasão de rank -->
-        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;padding:10px 14px;border-radius:12px;background:${cfg.bg};">
-          ${rankSVG(rank, cfg.color)}
-          <span style="font-size:11px;font-weight:700;color:${cfg.color};letter-spacing:.5px;text-transform:uppercase;">${rank}</span>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;padding:10px 14px;border-radius:12px;background:${`rgba(${rankObj.color.replace('#','').match(/.{2}/g).map(h=>parseInt(h,16)).join(',')},0.12)`};">
+          ${rankObj.svg(64)}
+          <span style="font-size:11px;font-weight:700;color:${rankObj.color};letter-spacing:.5px;text-transform:uppercase;">${rankObj.name}</span>
+          <span style="font-size:10px;color:${rankObj.color};opacity:.8;">Nv. ${level}</span>
         </div>
       </div>
 
       <!-- XP bar -->
       <div style="margin-bottom:20px;padding:12px 14px;border-radius:10px;background:var(--bg-card2,#f7f7fa);border:1px solid var(--border,#ebebeb);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span style="font-size:12px;color:var(--ink-muted,#888);">XP Total</span>
-          <span style="font-size:13px;font-weight:700;color:${cfg.color};">${xp} XP${rank!=='Diamante'?' · próximo rank: '+cfg.next+' XP':' · Rank máximo'}</span>
+          <span style="font-size:12px;color:var(--ink-muted,#888);">Nível ${level} · ${xp} XP total</span>
+          <span style="font-size:13px;font-weight:700;color:${rankObj.color};">${xpInLevel} / 1000 XP</span>
         </div>
         <div style="height:7px;background:var(--border,#e8e8e8);border-radius:8px;overflow:hidden;">
-          <div style="height:100%;width:${xpPct}%;background:${cfg.color};border-radius:8px;transition:width .5s;"></div>
+          <div style="height:100%;width:${xpPct}%;background:${rankObj.color};border-radius:8px;transition:width .5s;"></div>
         </div>
       </div>
 
