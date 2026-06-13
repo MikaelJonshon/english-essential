@@ -106,15 +106,21 @@
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpocHFkeHFzZ255cXR6cXZnZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTEyMjksImV4cCI6MjA5NTY2NzIyOX0.xGC_jijXKpRAdhuyyTMQxS8qkca0Dap_Wcs3_8xKvcw';
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  // Se já há sessão válida, redirecionar
-  const _session = localStorage.getItem('ee_session');
-  if (_session) {
+  // Se há sessão em cache, validar token no backend antes de redirecionar
+  (async () => {
+    const raw = localStorage.getItem('ee_session');
+    if (!raw) return;
     try {
-      const s = JSON.parse(_session);
-      if (s.role === 'student') window.location.href = 'dashboard-aluno/index.html';
-      else if (['teacher','admin','secretaria'].includes(s.role)) window.location.href = 'dashboard-professor/index.html';
+      const s = JSON.parse(raw);
+      if (!s.token) { localStorage.removeItem('ee_session'); return; }
+      const { data } = await db.rpc('check_session', { p_token: s.token });
+      if (!data?.valid) { localStorage.removeItem('ee_session'); return; }
+      // Token válido — redirecionar
+      if (data.role === 'student') window.location.href = 'dashboard-aluno/index.html';
+      else if (['teacher','admin','secretaria'].includes(data.role)) window.location.href = 'dashboard-professor/index.html';
+      else localStorage.removeItem('ee_session');
     } catch(e) { localStorage.removeItem('ee_session'); }
-  }
+  })();
 
   function togglePassword() {
     const input = document.getElementById('userPass');

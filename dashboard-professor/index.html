@@ -539,9 +539,19 @@
 
   let session = null, allStudents = [];
 
+  function forceLogout() {
+    localStorage.removeItem('ee_session');
+    window.location.href = '../index.html';
+  }
+
+  function isSessionError(error) {
+    const msg = (error?.message || error?.hint || '').toLowerCase();
+    return msg.includes('sess') || msg.includes('inválid') || msg.includes('expirad') || msg.includes('inativ');
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     try { session = JSON.parse(localStorage.getItem('ee_session')); } catch(e) {}
-    if (!session || !['teacher','admin','secretaria'].includes(session.role)) {
+    if (!session || !['teacher','admin','secretaria'].includes(session.role) || !session.token) {
       window.location.href = '../index.html'; return;
     }
     document.querySelector('.avatar').textContent          = initials(session.full_name);
@@ -566,7 +576,8 @@
   });
 
   async function loadMetrics() {
-    const { data } = await db.rpc('get_teacher_metrics', { p_token: session.token });
+    const { data, error } = await db.rpc('get_teacher_metrics', { p_token: session.token });
+    if (error && isSessionError(error)) { forceLogout(); return; }
     if (!data) return;
     const $el = id => document.getElementById(id);
     if ($el('metricTotal'))    $el('metricTotal').textContent    = data.total_students;
@@ -577,7 +588,8 @@
 
   async function loadStudents() {
     const { data, error } = await db.rpc('get_all_students_for_teacher', { p_token: session.token });
-    if (error || !data) {
+    if (error) {
+      if (isSessionError(error)) { forceLogout(); return; }
       document.getElementById('studentList').innerHTML =
         '<div style="padding:24px;text-align:center;color:var(--danger);font-size:13px;">Erro ao carregar alunos.</div>';
       return;

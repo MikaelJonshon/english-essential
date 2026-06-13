@@ -154,6 +154,17 @@ function renderSidebarProfile(profile) {
   name.textContent = displayName;
 }
 
+// ── Sessão inválida → logout ──────────────────────────────────────────────────
+function forceLogout() {
+  localStorage.removeItem('ee_session');
+  window.location.href = '../index.html';
+}
+
+function isSessionError(error) {
+  const msg = (error?.message || error?.hint || '').toLowerCase();
+  return msg.includes('sessão') || msg.includes('sess') || msg.includes('inválid') || msg.includes('expirad') || msg.includes('inativ');
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('exCard').addEventListener('click', (e) => {
@@ -162,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   try { session = JSON.parse(localStorage.getItem('ee_session')); } catch(e) {}
-  if (!session || session.role !== 'student') { window.location.href = '../index.html'; return; }
+  if (!session || session.role !== 'student' || !session.token) { window.location.href = '../index.html'; return; }
   renderSidebarProfile(session);
   document.getElementById('topbarSub').textContent =
     new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });
@@ -180,7 +191,13 @@ window.addEventListener('beforeunload', saveLessonDraft);
 // ── Home ──────────────────────────────────────────────────────────────────────
 async function loadHome() {
   const { data, error } = await db.rpc('get_student_home', { p_token: session.token });
-  if (error || !data) {
+  if (error) {
+    if (isSessionError(error)) { forceLogout(); return; }
+    document.getElementById('homeView').innerHTML =
+      '<div class="loading-center" style="color:var(--danger);">Erro ao carregar o curso. Tente novamente.</div>';
+    return;
+  }
+  if (!data) {
     document.getElementById('homeView').innerHTML =
       '<div class="loading-center" style="color:var(--danger);">Erro ao carregar o curso. Tente novamente.</div>';
     return;
