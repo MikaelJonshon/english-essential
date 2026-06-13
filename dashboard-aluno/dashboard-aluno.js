@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try { session = JSON.parse(localStorage.getItem('ee_session')); } catch(e) {}
   if (!session || session.role !== 'student' || !session.token) { window.location.href = '../index.html'; return; }
+  if (session.expires_at && new Date(session.expires_at) <= new Date()) { localStorage.removeItem('ee_session'); window.location.href = '../index.html'; return; }
   renderSidebarProfile(session);
   document.getElementById('topbarSub').textContent =
     new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });

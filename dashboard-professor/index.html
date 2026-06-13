@@ -554,6 +554,7 @@
     if (!session || !['teacher','admin','secretaria'].includes(session.role) || !session.token) {
       window.location.href = '../index.html'; return;
     }
+    if (session.expires_at && new Date(session.expires_at) <= new Date()) { localStorage.removeItem('ee_session'); window.location.href = '../index.html'; return; }
     document.querySelector('.avatar').textContent          = initials(session.full_name);
     document.querySelector('.user-name').textContent       = session.full_name || '—';
     document.querySelector('.user-role-label').textContent = session.role === 'admin' ? 'Administrador' : (session.role === 'secretaria' ? 'Secretaria' : 'Professor');

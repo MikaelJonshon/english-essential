@@ -113,6 +113,8 @@
     try {
       const s = JSON.parse(raw);
       if (!s.token) { localStorage.removeItem('ee_session'); return; }
+      // Checagem rápida client-side antes de ir ao servidor
+      if (s.expires_at && new Date(s.expires_at) <= new Date()) { localStorage.removeItem('ee_session'); return; }
       const { data } = await db.rpc('check_session', { p_token: s.token });
       if (!data?.valid) { localStorage.removeItem('ee_session'); return; }
       // Token válido — redirecionar
@@ -168,7 +170,20 @@
       if (error) throw error;
 
       if (!data || !data.success) {
-        showError(data?.message || 'Usuário ou senha incorretos.');
+        showError(data?.message || 'Código ou senha incorretos.');
+        if (data?.blocked) {
+          // Desabilitar o botão por 15 min
+          const btn = document.querySelector('.btn-login');
+          btn.disabled = true;
+          const until = Date.now() + 15 * 60 * 1000;
+          const tick = () => {
+            const left = Math.ceil((until - Date.now()) / 1000);
+            if (left <= 0) { btn.disabled = false; document.getElementById('btnLabel').textContent = 'Entrar'; return; }
+            document.getElementById('btnLabel').textContent = `Aguarde ${left}s`;
+            setTimeout(tick, 1000);
+          };
+          tick();
+        }
         setLoading(false);
         return;
       }
@@ -176,6 +191,7 @@
       localStorage.setItem('ee_session', JSON.stringify({
         id:              data.id,
         token:           data.token,
+        expires_at:      data.expires_at || null,
         full_name:       data.full_name,
         display_name:    data.display_name || data.full_name,
         role:            data.role,
