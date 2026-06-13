@@ -15,6 +15,17 @@ const SUPABASE_URL  = 'https://jhpqdxqsgnyqtzqvggvx.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpocHFkeHFzZ255cXR6cXZnZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTEyMjksImV4cCI6MjA5NTY2NzIyOX0.xGC_jijXKpRAdhuyyTMQxS8qkca0Dap_Wcs3_8xKvcw';
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
+// ── Utilitário de escape HTML (previne XSS) ───────────────────────────────────
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // ── Branding da Org ────────────────────────────────────────────────────────────
 function applyOrgBranding(branding) {
   const logoUrl = branding?.logo_url || null;
@@ -26,7 +37,13 @@ function applyOrgBranding(branding) {
   const wrapper = name?.parentElement;
   if (logoUrl) {
     icon.style.display = 'none';
-    name.innerHTML     = `<img src="${logoUrl}" alt="Logo" style="max-height:34px;max-width:140px;object-fit:contain;display:block;margin:0 auto;" />`;
+    // Usar createElement para evitar XSS via logo_url malicioso
+    name.textContent = '';
+    const img = document.createElement('img');
+    img.src = logoUrl;
+    img.alt = 'Logo';
+    img.style.cssText = 'max-height:34px;max-width:140px;object-fit:contain;display:block;margin:0 auto;';
+    name.appendChild(img);
     if (link)    { link.style.flexDirection = 'column'; link.style.alignItems = 'center'; link.style.width = '100%'; }
     if (wrapper) wrapper.style.textAlign = 'center';
     if (role)    role.style.textAlign = 'center';
@@ -402,7 +419,7 @@ function renderHome(data) {
   const user = data.user, courses = data.courses || [], total = Number(data.total_lessons || 0);
   let totalDone = 0;
   courses.forEach(c => c.modules.forEach(m => m.lessons.forEach(l => { if (l.completed) totalDone++; })));
-  const first = user.full_name ? user.full_name.split(' ')[0] : 'aluno';
+  const first = escapeHtml(user.full_name ? user.full_name.split(' ')[0] : 'aluno');
   document.getElementById('homeView').innerHTML = `
     <div class="welcome-banner">
       <div class="welcome-text">

@@ -1047,7 +1047,13 @@
     const wrapper = name?.parentElement;
     if (logoUrl) {
       icon.style.display = 'none';
-      name.innerHTML     = `<img src="${logoUrl}" alt="Logo" style="max-height:34px;max-width:140px;object-fit:contain;display:block;margin:0 auto;" />`;
+      // Usar createElement para evitar XSS via logo_url malicioso
+      name.textContent = '';
+      const img = document.createElement('img');
+      img.src = logoUrl;
+      img.alt = 'Logo';
+      img.style.cssText = 'max-height:34px;max-width:140px;object-fit:contain;display:block;margin:0 auto;';
+      name.appendChild(img);
       if (link)    { link.style.flexDirection = 'column'; link.style.alignItems = 'center'; link.style.width = '100%'; }
       if (wrapper) wrapper.style.textAlign = 'center';
       if (role)    role.style.textAlign = 'center';
