@@ -101,7 +101,7 @@ async function loadRemoteLessonState(lessonId, exercises) {
   if (!session?.id || !lessonId) return null;
   try {
     const { data, error } = await db.rpc('get_lesson_progress_state', {
-      p_caller_id: session.id,
+      p_token: session.token,
       p_lesson_id: lessonId
     });
     if (error || !data) return null;
@@ -127,7 +127,7 @@ async function persistLessonState(payload) {
   if (!session?.id || !currentLesson?.id) return;
   try {
     await db.rpc('save_lesson_progress_state', {
-      p_caller_id: session.id,
+      p_token: session.token,
       p_lesson_id: currentLesson.id,
       p_current_exercise_index: Number(payload.currentExIdx || 0),
       p_lesson_state: {
@@ -179,7 +179,7 @@ window.addEventListener('beforeunload', saveLessonDraft);
 
 // ── Home ──────────────────────────────────────────────────────────────────────
 async function loadHome() {
-  const { data, error } = await db.rpc('get_student_home', { p_caller_id: session.id });
+  const { data, error } = await db.rpc('get_student_home', { p_token: session.token });
   if (error || !data) {
     document.getElementById('homeView').innerHTML =
       '<div class="loading-center" style="color:var(--danger);">Erro ao carregar o curso. Tente novamente.</div>';
@@ -279,7 +279,7 @@ let skillStats  = { speaking: 0, listening: 0, writing: 0, reading: 0 };
 let _skillCounts = {};
 
 async function loadSkillStats() {
-  const { data } = await db.rpc('get_skill_stats', { p_caller_id: session.id });
+  const { data } = await db.rpc('get_skill_stats', { p_token: session.token });
   if (data) {
     skillStats = {
       speaking:  Number(data.speaking  || 0),
@@ -718,7 +718,7 @@ async function openLesson(lessonId, lessonTitle, pathClassIndex = null) {
     '<div class="loading-center"><div class="dot-loader"><span></span><span></span><span></span></div><div>Carregando lição...</div></div>';
   document.getElementById('topbarTitle').textContent = lessonTitle;
 
-  const { data, error } = await db.rpc('get_lesson_content', { p_caller_id: session.id, p_lesson_id: lessonId });
+  const { data, error } = await db.rpc('get_lesson_content', { p_token: session.token, p_lesson_id: lessonId });
   if (error || !data) { document.getElementById('exCard').innerHTML = '<div class="loading-center" style="color:var(--danger);">Erro ao carregar lição.</div>'; return; }
   if (data.locked) { document.getElementById('exCard').innerHTML = `<div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;margin-bottom:16px;">🔒</div><p style="font-size:15px;color:var(--ink-muted);">${data.message}</p></div>`; return; }
 
@@ -1058,7 +1058,7 @@ async function confirmAnswer() {
   document.getElementById('btnSpin').style.display = 'block';
   document.getElementById('btnLabel').textContent  = 'Verificando...';
 
-  const { data, error } = await db.rpc('submit_answer', { p_caller_id: session.id, p_exercise_id: ex.id, p_answer: answer });
+  const { data, error } = await db.rpc('submit_answer', { p_token: session.token, p_exercise_id: ex.id, p_answer: answer });
   document.getElementById('btnSpin').style.display = 'none';
   if (error || !data) { document.getElementById('btnLabel').textContent = 'Confirmar'; btn.disabled = false; return; }
 
@@ -1642,7 +1642,7 @@ async function finishLesson() {
   const total   = currentLesson.exercises.length;
   const correct = Object.values(answers).filter(a => a.is_correct).length;
   const score   = total > 0 ? Math.round((correct / total) * 100) : 0;
-  const { data } = await db.rpc('complete_lesson', { p_caller_id: session.id, p_lesson_id: currentLesson.id, p_score: score });
+  const { data } = await db.rpc('complete_lesson', { p_token: session.token, p_lesson_id: currentLesson.id, p_score: score });
   clearLessonDraft();
   showCompletion(score, data || {});
 }

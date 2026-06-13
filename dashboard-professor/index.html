@@ -566,7 +566,7 @@
   });
 
   async function loadMetrics() {
-    const { data } = await db.rpc('get_teacher_metrics', { p_caller_id: session.id });
+    const { data } = await db.rpc('get_teacher_metrics', { p_token: session.token });
     if (!data) return;
     const $el = id => document.getElementById(id);
     if ($el('metricTotal'))    $el('metricTotal').textContent    = data.total_students;
@@ -576,7 +576,7 @@
   }
 
   async function loadStudents() {
-    const { data, error } = await db.rpc('get_all_students_for_teacher', { p_caller_id: session.id });
+    const { data, error } = await db.rpc('get_all_students_for_teacher', { p_token: session.token });
     if (error || !data) {
       document.getElementById('studentList').innerHTML =
         '<div style="padding:24px;text-align:center;color:var(--danger);font-size:13px;">Erro ao carregar alunos.</div>';
@@ -637,7 +637,7 @@
   }
 
   async function loadErrorExercises() {
-    const { data } = await db.rpc('get_error_rate_exercises', { p_caller_id: session.id });
+    const { data } = await db.rpc('get_error_rate_exercises', { p_token: session.token });
     const el = document.getElementById('errorExercises');
     if (!data || !data.length) {
       el.innerHTML = '<div style="padding:20px 22px;font-size:13px;color:var(--ink-muted);">Ainda não há dados de exercícios.</div>';
@@ -703,7 +703,7 @@
     setTeacherSaveLoading(true);
     try {
       const { error } = await db.rpc('create_teacher', {
-        p_caller_id: session.id,
+        p_token: session.token,
         p_code: code,
         p_full_name: name,
         p_password: pass,
@@ -756,7 +756,7 @@
     const el = document.getElementById('studentViewList');
     el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando alunos...</div>';
     try {
-      const { data, error } = await db.rpc('get_all_students_for_teacher', { p_caller_id: session.id });
+      const { data, error } = await db.rpc('get_all_students_for_teacher', { p_token: session.token });
       if (error) throw error;
       allStudentsView = data || [];
       applyStudentFilters();
@@ -834,7 +834,7 @@
     const el = document.getElementById('staffList');
     el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:13px;">Carregando usuários...</div>';
     try {
-      const { data, error } = await db.rpc('get_all_staff', { p_caller_id: session.id });
+      const { data, error } = await db.rpc('get_all_staff', { p_token: session.token });
       if (error) throw error;
       renderStaff(data || []);
     } catch(err) {
@@ -915,7 +915,7 @@
     document.getElementById('savePassLabel').textContent = 'Salvando...';
     try {
       const { error } = await db.rpc('update_staff_password', {
-        p_caller_id: session.id,
+        p_token: session.token,
         p_target_id: passTarget.id,
         p_target_table: passTarget.table,
         p_new_password: pass
@@ -957,7 +957,7 @@
     document.getElementById('deleteConfirmLabel').textContent = 'Removendo...';
     try {
       const { error } = await db.rpc('delete_staff', {
-        p_caller_id: session.id,
+        p_token: session.token,
         p_target_id: deleteTarget.id,
         p_target_table: deleteTarget.table
       });
@@ -1013,7 +1013,7 @@
     setSaveLoading(true);
     try {
       const { error } = await db.rpc('create_student',
-        { p_caller_id: session.id, p_code: code, p_full_name: name, p_password: pass });
+        { p_token: session.token, p_code: code, p_full_name: name, p_password: pass });
       if (error) throw error;
       showFeedback('success', `Aluno "${name}" criado com sucesso!`);
       await Promise.all([loadStudents(), loadMetrics()]);
@@ -1149,7 +1149,7 @@
       const publicUrl = urlData.publicUrl + '?v=' + Date.now();
 
       const { error: rpcErr } = await db.rpc('update_org_branding', {
-        p_caller_id: session.id,
+        p_token: session.token,
         p_logo_url:  publicUrl
       });
       if (rpcErr) throw rpcErr;
@@ -1175,7 +1175,7 @@
       const exts = ['png','jpg','jpeg','svg','webp'];
       await Promise.all(exts.map(e => db.storage.from('org-assets').remove([`${session.organization_id}/logo.${e}`])));
 
-      const { error } = await db.rpc('update_org_branding', { p_caller_id: session.id, p_logo_url: null });
+      const { error } = await db.rpc('update_org_branding', { p_token: session.token, p_logo_url: null });
       if (error) throw error;
 
       const cached = JSON.parse(localStorage.getItem('ee_org_branding') || '{}');
@@ -1245,7 +1245,7 @@
 
     try {
       const { data, error } = await db.rpc('get_student_profile', {
-        p_caller_id: session.id,
+        p_token: session.token,
         p_student_id: studentId
       });
       if (error) throw error;

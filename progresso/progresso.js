@@ -34,7 +34,7 @@ function renderSidebar(profile) {
 
 // ── Carregar dados ───────────────────────────────────────────────────────────
 async function loadProgress() {
-  const { data, error } = await db.rpc('get_student_progress', { p_caller_id: session.id });
+  const { data, error } = await db.rpc('get_student_progress', { p_token: session.token });
 
   if (error || !data) {
     document.getElementById('loader').innerHTML =

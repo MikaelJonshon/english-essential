@@ -175,9 +175,12 @@
 
       localStorage.setItem('ee_session', JSON.stringify({
         id:              data.id,
+        token:           data.token,
         full_name:       data.full_name,
+        display_name:    data.display_name || data.full_name,
         role:            data.role,
-        organization_id: data.organization_id || null
+        organization_id: data.organization_id || null,
+        avatar_url:      data.avatar_url || null
       }));
 
       if (data.role === 'student') {
