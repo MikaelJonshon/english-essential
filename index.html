@@ -161,14 +161,8 @@
 
       if (error) throw error;
 
-      if (!data) {
-        showError('Usuário ou senha incorretos.');
-        setLoading(false);
-        return;
-      }
-
-      if (data.status === 'inactive') {
-        showError('Conta inativa. Entre em contato com seu professor.');
+      if (!data || !data.success) {
+        showError(data?.message || 'Usuário ou senha incorretos.');
         setLoading(false);
         return;
       }
