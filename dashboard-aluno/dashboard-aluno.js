@@ -22,9 +22,15 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-// ── Validação de URL — apenas domínio Supabase permitido ──────────────────────
+// ── Validação de URL — permite caminhos relativos (same-origin) e domínio Supabase ─
 function isSafeUrl(url) {
   if (!url || typeof url !== 'string') return false;
+  // Caminhos relativos são sempre same-origin — sem risco de injeção de domínio externo
+  // Rejeita protocol-relative (//evil.com) e esquemas perigosos (javascript:, data:)
+  if (!/^[a-z][a-z0-9+\-.]*:/i.test(url)) {
+    return !url.startsWith('//');
+  }
+  // URL absoluta: só aceita HTTPS do domínio Supabase
   try {
     const u = new URL(url);
     return u.protocol === 'https:' && u.hostname === 'jhpqdxqsgnyqtzqvggvx.supabase.co';
